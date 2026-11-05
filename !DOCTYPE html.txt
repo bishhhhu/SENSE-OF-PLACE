@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PURNA MARKET — Sense of Place</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #080a18;
+      color: #ffffff;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .ambient-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 25%, rgba(30, 40, 95, 0.6) 0%, rgba(8, 10, 24, 1) 85%);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      position: relative;
+      z-index: 20;
+      height: 64px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 10, 24, 0.85);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #00f0ff;
+    }
+
+    .header-btns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .hdr-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 7px 14px;
+      border-radius: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .hdr-btn:hover {
+      background: rgba(0, 240, 255, 0.2);
+      border-color: #00f0ff;
+      box-shadow: 0 0 12px rgba(0, 240, 255, 0.4);
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Upper Stage: Floating Curved Cards Carousel */
+    .carousel-section {
+      flex: 1.15;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .cards-track {
+      position: relative;
+      width: 100%;
+      height: 290px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .floating-card {
+      position: absolute;
+      width: 220px;
+      height: 280px;
+      background: rgba(20, 24, 46, 0.9);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.45s ease,
+                  box-shadow 0.3s ease,
+                  border-color 0.3s ease;
+    }
+
+    .floating-card.active {
+      border-color: #00f0ff;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.4), 0 25px 50px rgba(0, 0, 0, 0.85);
+      z-index: 15 !important;
+    }
+
+    .card-img-holder {
+      width: 100%;
+      height: 195px;
+      position: relative;
+      background: #111425;
+      overflow: hidden;
+    }
+
+    .card-img-holder img, .card-img-holder canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 10px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .card-meta {
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #ffffff;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .nav-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(20, 24, 46, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 25;
+      transition: all 0.2s ease;
+    }
+
+    .nav-arrow:hover {
+      background: rgba(0, 240, 255, 0.25);
+      border-color: #00f0ff;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    .arrow-left { left: 30px; }
+    .arrow-right { right: 30px; }
+
+    .enter-btn-wrap {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+    }
+
+    .btn-enter-zone {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.25), rgba(255, 42, 133, 0.25));
+      border: 1px solid #00f0ff;
+      color: #fff;
+      padding: 9px 24px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+      transition: all 0.2s ease;
+    }
+
+    .btn-enter-zone:hover {
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.45), rgba(255, 42, 133, 0.45));
+      box-shadow: 0 0 28px rgba(0, 240, 255, 0.6);
+      transform: scale(1.03);
+    }
+
+    /* Lower Stage: Neon Perspective Ground Map */
+    .map-section {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .map-board {
+      width: 880px;
+      height: 380px;
+      position: relative;
+      background: radial-gradient(circle at center, rgba(16, 22, 54, 0.8) 0%, rgba(8, 10, 22, 0.98) 75%);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+      overflow: hidden;
+    }
+
+    .map-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .neon-pin {
+      position: absolute;
+      width: 44px;
+      height: 56px;
+      margin-left: -22px;
+      margin-top: -48px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 10;
+    }
+
+    .neon-pin:hover, .neon-pin.active {
+      transform: scale(1.3) translateY(-6px);
+      z-index: 20;
+    }
+
+    .pin-svg-icon {
+      width: 34px;
+      height: 44px;
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+
+    .pin-ring {
+      position: absolute;
+      bottom: 2px;
+      width: 32px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      animation: pinWave 2s infinite ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes pinWave {
+      0% { transform: scale(0.6); opacity: 0.9; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    .pin-label-tag {
+      position: absolute;
+      bottom: -18px;
+      white-space: nowrap;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      background: rgba(8, 10, 22, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 2px 7px;
+      border-radius: 6px;
+      color: #fff;
+      pointer-events: none;
+    }
+
+    /* 360 Fullscreen Walkthrough Modal */
+    .walkthrough-modal {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+    }
+
+    .walkthrough-modal.open {
+      display: flex;
+    }
+
+    .walkthrough-topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 110;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+    }
+
+    .walkthrough-header-info h2 {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .walkthrough-header-info span {
+      font-size: 12px;
+      font-weight: 600;
+      color: #00f0ff;
+      letter-spacing: 1px;
+    }
+
+    .btn-exit-walkthrough {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-exit-walkthrough:hover {
+      background: rgba(255, 42, 133, 0.3);
+      border-color: #ff2a85;
+    }
+
+    .viewer-area {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    .viewer-area:active {
+      cursor: grabbing;
+    }
+
+    .teleport-hotspot {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #00f0ff;
+      background: rgba(0, 240, 255, 0.25);
+      box-shadow: 0 0 18px #00f0ff;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 105;
+      transition: transform 0.2s ease;
+    }
+
+    .teleport-hotspot:hover {
+      transform: translate(-50%, -50%) scale(1.2);
+      background: rgba(0, 240, 255, 0.5);
+    }
+
+    .teleport-hotspot span {
+      position: absolute;
+      bottom: -22px;
+      white-space: nowrap;
+      background: rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .compass-disc {
+      position: absolute;
+      top: 80px;
+      right: 24px;
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(14, 18, 38, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 110;
+    }
+
+    .compass-pointer {
+      width: 4px;
+      height: 30px;
+      position: relative;
+    }
+
+    .compass-pointer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: #ff2a85;
+      border-radius: 2px 2px 0 0;
+    }
+
+    .compass-pointer::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: #ffffff;
+      border-radius: 0 0 2px 2px;
+    }
+
+    .thumbnail-dock {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      background: rgba(12, 16, 36, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 6px 12px;
+      z-index: 110;
+      backdrop-filter: blur(10px);
+    }
+
+    .dock-thumb {
+      width: 58px;
+      height: 42px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .dock-thumb img, .dock-thumb canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .dock-thumb.active, .dock-thumb:hover {
+      border-color: #00f0ff;
+      box-shadow: 0 0 12px #00f0ff;
+      transform: translateY(-2px);
+    }
+
+    .dock-thumb span {
+      position: absolute;
+      bottom: 1px;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 9px;
+      font-weight: 800;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+    }
+
+    #fileInput {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient-glow"></div>
+  <input type="file" id="fileInput" multiple accept="image/*" />
+
+  <header>
+    <div class="brand-wrap">
+      <div class="brand-title">PURNA MARKET</div>
+      <div class="brand-subtitle">Sense of Place</div>
+    </div>
+    <div class="header-btns">
+      <button class="hdr-btn" id="btnUploadImages">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+        <span>Link Images</span>
+      </button>
+      <button class="hdr-btn" id="btnHelp">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+        <span>Guide</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="carousel-section" id="carouselSection">
+      <button class="nav-arrow arrow-left" id="btnPrev" aria-label="Previous">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="cards-track" id="cardsTrack"></div>
+
+      <button class="nav-arrow arrow-right" id="btnNext" aria-label="Next">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+
+      <div class="enter-btn-wrap">
+        <button class="btn-enter-zone" id="btnEnterActiveZone">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+          </svg>
+          <span>Enter 360° Walkthrough</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="map-section">
+      <div class="map-board">
+        <svg class="map-svg" viewBox="0 0 880 380">
+          <defs>
+            <linearGradient id="neonPathGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.7"/>
+              <stop offset="50%" stop-color="#ff2a85" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#25f46a" stop-opacity="0.7"/>
+            </linearGradient>
+          </defs>
+
+          <ellipse cx="440" cy="190" rx="390" ry="160" fill="none" stroke="rgba(0, 240, 255, 0.1)" stroke-width="1.5" stroke-dasharray="6 6"/>
+          <ellipse cx="440" cy="190" rx="280" ry="115" fill="none" stroke="rgba(255, 42, 133, 0.1)" stroke-width="1.5"/>
+          <ellipse cx="440" cy="190" rx="160" ry="65" fill="none" stroke="rgba(37, 244, 106, 0.15)" stroke-width="2"/>
+
+          <path d="M 50,260 C 180,240 250,290 390,210 C 490,150 640,170 820,120" fill="none" stroke="url(#neonPathGrad)" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 110,100 C 230,150 330,110 450,190 C 550,250 710,230 800,290" fill="none" stroke="rgba(0, 240, 255, 0.35)" stroke-width="2" stroke-linecap="round"/>
+
+          <line x1="100" y1="250" x2="220" y2="280" stroke="rgba(37, 244, 106, 0.45)" stroke-width="2" stroke-dasharray="4 4"/>
+          <line x1="220" y1="280" x2="360" y2="120" stroke="rgba(0, 240, 255, 0.4)" stroke-width="2"/>
+          <line x1="360" y1="120" x2="450" y2="190" stroke="rgba(255, 170, 0, 0.45)" stroke-width="2"/>
+          <line x1="450" y1="190" x2="540" y2="270" stroke="rgba(255, 42, 133, 0.5)" stroke-width="2.5"/>
+          <line x1="540" y1="270" x2="720" y2="220" stroke="rgba(0, 240, 255, 0.5)" stroke-width="2" stroke-dasharray="5 5"/>
+          <line x1="720" y1="220" x2="830" y2="130" stroke="rgba(37, 244, 106, 0.4)" stroke-width="2"/>
+        </svg>
+
+        <div id="pinsContainer"></div>
+      </div>
+    </section>
+  </main>
+
+  <div class="walkthrough-modal" id="walkthroughModal">
+    <div class="walkthrough-topbar">
+      <div class="walkthrough-header-info">
+        <h2 id="modalZoneTitle">ZONE 1</h2>
+        <span id="modalZoneSubtitle">The Walk</span>
+      </div>
+      <button class="btn-exit-walkthrough" id="btnExitModal">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        <span>Exit 360°</span>
+      </button>
+    </div>
+
+    <div class="compass-disc">
+      <div class="compass-pointer" id="compassPointer"></div>
+    </div>
+
+    <div class="viewer-area" id="viewerArea"></div>
+    <div id="hotspotMount"></div>
+
+    <div class="thumbnail-dock" id="thumbnailDock"></div>
+  </div>
+
+  <script>
+    const ZONES = [
+      {
+        id: 1,
+        title: "ZONE 1",
+        subtitle: "The Walk",
+        image: "pedestrian_5.jpg",
+        alts: ["pedestrian_4.jpg", "pedestrian_3.jpg", "pedestrian_2.jpg", "pedestrian.jpg"],
+        color: "#00f0ff",
+        pinX: 100,
+        pinY: 250,
+        nextId: 2,
+        yaw: 0,
+        theme: "boulevard"
+      },
+      {
+        id: 2,
+        title: "ZONE 2",
+        subtitle: "Live in the Space",
+        image: "building view_3.jpg",
+        alts: ["building view_2.jpg", "building view.jpg", "building_view.jpg", "building_view_2.jpg"],
+        color: "#25f46a",
+        pinX: 220,
+        pinY: 280,
+        nextId: 3,
+        yaw: 45,
+        theme: "hypar"
+      },
+      {
+        id: 3,
+        title: "ZONE 3",
+        subtitle: "Everyday Life",
+        image: "store.jpg",
+        alts: ["store_view.jpg", "stores.jpg"],
+        color: "#0099ff",
+        pinX: 360,
+        pinY: 120,
+        nextId: 4,
+        yaw: 90,
+        theme: "jali"
+      },
+      {
+        id: 4,
+        title: "ZONE 4",
+        subtitle: "The Path",
+        image: "walkway-2.jpg",
+        alts: ["walkway_2.jpg", "walkway.jpg"],
+        color: "#25f46a",
+        pinX: 830,
+        pinY: 130,
+        nextId: 5,
+        yaw: 135,
+        theme: "pergola"
+      },
+      {
+        id: 5,
+        title: "ZONE 5",
+        subtitle: "The Rest",
+        image: "seating image.jpg",
+        alts: ["seating_image.jpg", "seating.jpg"],
+        color: "#ff2a85",
+        pinX: 540,
+        pinY: 270,
+        nextId: 6,
+        yaw: 180,
+        theme: "courtyard"
+      },
+      {
+        id: 6,
+        title: "ZONE 6",
+        subtitle: "Between Bricks",
+        image: "jaali view one.jpg",
+        alts: ["jaali_view_one.jpg", "jali_view.jpg"],
+        color: "#ffaa00",
+        pinX: 450,
+        pinY: 190,
+        nextId: 7,
+        yaw: 225,
+        theme: "brickgallery"
+      },
+      {
+        id: 7,
+        title: "ZONE 7",
+        subtitle: "The Feel",
+        image: "market night view.jpg",
+        alts: ["market_night_view.jpg", "night_market.jpg"],
+        color: "#00f0ff",
+        pinX: 720,
+        pinY: 220,
+        nextId: 1,
+        yaw: 270,
+        theme: "nightbazaar"
+      }
+    ];
+
+    let currentIndex = 0;
+    let loadedBlobs = {};
+    let isModalOpen = false;
+
+    function generateVisual(zone, w = 600, h = 400) {
+      const cvs = document.createElement("canvas");
+      cvs.width = w;
+      cvs.height = h;
+      const ctx = cvs.getContext("2d");
+
+      if (zone.theme === "boulevard") {
+        const sky = ctx.createLinearGradient(0, 0, 0, h * 0.45);
+        sky.addColorStop(0, "#7eb3dd"); sky.addColorStop(1, "#cce6ff");
+        ctx.fillStyle = sky; ctx.fillRect(0, 0, w, h * 0.45);
+
+        ctx.fillStyle = "#ccd4e0";
+        for (let i = 0; i < 6; i++) {
+          const tw = 65 + (i % 3) * 15;
+          const th = 85 + (i % 4) * 30;
+          ctx.fillRect(30 + i * 95, h * 0.45 - th, tw, th);
+        }
+
+        ctx.fillStyle = "#8a8f98";
+        ctx.fillRect(20, h * 0.28, 160, 100);
+        ctx.fillStyle = "#4a4e58";
+        ctx.beginPath();
+        ctx.moveTo(10, h * 0.28); ctx.lineTo(100, h * 0.18); ctx.lineTo(190, h * 0.28);
+        ctx.fill();
+
+        ctx.fillStyle = "#f0ece1";
+        ctx.fillRect(0, h * 0.45, w, h * 0.55);
+
+        ctx.fillStyle = "#eb5d45";
+        ctx.beginPath();
+        ctx.moveTo(0, h);
+        ctx.bezierCurveTo(w * 0.2, h * 0.65, w * 0.4, h * 0.85, w * 0.5, h);
+        ctx.fill();
+
+        ctx.fillStyle = "#f8cf43";
+        ctx.beginPath(); ctx.arc(w * 0.5, h * 0.88, 110, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = "#38b291";
+        ctx.beginPath();
+        ctx.moveTo(w * 0.55, h);
+        ctx.bezierCurveTo(w * 0.7, h * 0.7, w * 0.85, h * 0.65, w, h * 0.75);
+        ctx.lineTo(w, h); ctx.fill();
+      } else if (zone.theme === "hypar") {
+        ctx.fillStyle = "#e0dad0"; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = "#bb5533";
+        for (let x = 0; x < w * 0.45; x += 16) {
+          ctx.fillRect(x, h * 0.25, 10, h * 0.4);
+        }
+        ctx.fillStyle = "#eeebe5";
+        ctx.beginPath();
+        ctx.moveTo(w * 0.35, 0); ctx.quadraticCurveTo(w * 0.75, h * 0.4, w, 0);
+        ctx.lineTo(w, h * 0.45); ctx.quadraticCurveTo(w * 0.75, h * 0.6, w * 0.35, h * 0.45);
+        ctx.fill();
+        ctx.fillStyle = "#cfc8be";
+        ctx.fillRect(w * 0.55, h * 0.35, 24, h * 0.45);
+        ctx.fillRect(w * 0.75, h * 0.35, 24, h * 0.45);
+        ctx.fillStyle = "#e03b24";
+        ctx.beginPath(); ctx.arc(w * 0.35, h * 0.75, 22, 0, Math.PI * 2); ctx.fill();
+      } else if (zone.theme === "jali") {
+        ctx.fillStyle = "#ebdacf"; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = "#b85d39";
+        ctx.fillRect(20, h * 0.15, 220, h * 0.6);
+        ctx.fillRect(w - 240, h * 0.15, 220, h * 0.6);
+        ctx.fillStyle = "#984725";
+        ctx.fillRect(w * 0.3, h * 0.12, w * 0.4, 65);
+        for (let jx = w * 0.32; jx < w * 0.68; jx += 16) {
+          for (let jy = h * 0.14; jy < h * 0.12 + 55; jy += 14) {
+            ctx.fillStyle = "#5c240e";
+            ctx.fillRect(jx, jy, 8, 7);
+          }
+        }
+      } else if (zone.theme === "pergola") {
+        ctx.fillStyle = "#5ca2e0"; ctx.fillRect(0, 0, w, h * 0.5);
+        ctx.fillStyle = "#4a8505";
+        ctx.beginPath(); ctx.arc(w * 0.3, h * 0.5, 250, Math.PI, 0); ctx.fill();
+        ctx.fillStyle = "#8a6240";
+        for (let p = 0; p < 7; p++) {
+          ctx.fillRect(30 + p * 85, h * 0.25, 16, h * 0.6);
+        }
+        ctx.fillStyle = "#b81d24"; ctx.fillRect(0, 0, w * 0.35, h * 0.25);
+        ctx.fillStyle = "#dfa112"; ctx.fillRect(w * 0.35, 0, w * 0.35, h * 0.25);
+        ctx.fillStyle = "#167c80"; ctx.fillRect(w * 0.7, 0, w * 0.3, h * 0.25);
+        ctx.fillStyle = "#d5cbb8"; ctx.fillRect(0, h * 0.6, w, h * 0.4);
+      } else if (zone.theme === "courtyard") {
+        ctx.fillStyle = "#82a176"; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = "#b4a589";
+        ctx.fillRect(0, h * 0.15, 170, h * 0.65);
+        ctx.fillRect(w - 180, h * 0.15, 180, h * 0.65);
+        ctx.fillStyle = "#69c82b";
+        ctx.beginPath();
+        ctx.moveTo(60, 20); ctx.lineTo(w * 0.45, 90); ctx.lineTo(200, 160); ctx.fill();
+        ctx.fillStyle = "#a8713f";
+        ctx.fillRect(w * 0.3, h * 0.68, 160, 45);
+        ctx.fillStyle = "#6bc62d";
+        ctx.fillRect(w * 0.32, h * 0.65, 156, 10);
+      } else if (zone.theme === "brickgallery") {
+        ctx.fillStyle = "#3e180a"; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = "#bf5528";
+        for (let bx = 0; bx < w; bx += 20) {
+          for (let by = 0; by < h; by += 16) {
+            if ((bx + by) % 32 === 0) continue;
+            ctx.fillRect(bx, by, 16, 12);
+          }
+        }
+        ctx.fillStyle = "#a94523";
+        ctx.fillRect(w * 0.25, h * 0.5, w * 0.5, h * 0.5);
+      } else {
+        const night = ctx.createLinearGradient(0, 0, 0, h);
+        night.addColorStop(0, "#080d1e"); night.addColorStop(1, "#181e35");
+        ctx.fillStyle = night; ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = "#1e798e";
+        ctx.beginPath(); ctx.moveTo(50, h * 0.42); ctx.lineTo(140, h * 0.32); ctx.lineTo(230, h * 0.42); ctx.fill();
+        ctx.fillStyle = "#c03232";
+        ctx.beginPath(); ctx.moveTo(w * 0.55, h * 0.42); ctx.lineTo(w * 0.68, h * 0.3); ctx.lineTo(w * 0.82, h * 0.42); ctx.fill();
+
+        ctx.strokeStyle = "rgba(255, 230, 160, 0.85)"; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, h * 0.2); ctx.quadraticCurveTo(w * 0.5, h * 0.38, w, h * 0.2); ctx.stroke();
+        for (let b = 30; b < w; b += 50) {
+          ctx.fillStyle = "#ffe49e";
+          ctx.beginPath(); ctx.arc(b, h * 0.28, 4.5, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+
+      return cvs.toDataURL("image/jpeg", 0.85);
+    }
+
+    function getZoneImage(zone) {
+      if (loadedBlobs[zone.image]) return loadedBlobs[zone.image];
+      for (let alt of zone.alts) {
+        if (loadedBlobs[alt]) return loadedBlobs[alt];
+      }
+      return zone.image;
+    }
+
+    const cardsTrack = document.getElementById("cardsTrack");
+    const pinsContainer = document.getElementById("pinsContainer");
+
+    function renderCarouselCards() {
+      cardsTrack.innerHTML = "";
+      ZONES.forEach((zone, idx) => {
+        const card = document.createElement("div");
+        card.className = "floating-card";
+        card.id = `card-${idx}`;
+
+        const imgWrap = document.createElement("div");
+        imgWrap.className = "card-img-holder";
+
+        const img = document.createElement("img");
+        img.alt = zone.title;
+        img.src = getZoneImage(zone);
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = generateVisual(zone, 400, 300);
+        };
+
+        const badge = document.createElement("div");
+        badge.className = "card-badge";
+        badge.textContent = `0${zone.id}`;
+
+        imgWrap.appendChild(img);
+        imgWrap.appendChild(badge);
+
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+        meta.innerHTML = `
+          <div class="card-title">${zone.title}</div>
+          <div class="card-subtitle">${zone.subtitle}</div>
+        `;
+
+        card.appendChild(imgWrap);
+        card.appendChild(meta);
+
+        card.addEventListener("click", () => {
+          if (currentIndex === idx) {
+            launchWalkthrough(idx);
+          } else {
+            setZoneIndex(idx);
+          }
+        });
+
+        cardsTrack.appendChild(card);
+      });
+      updateCarouselPositions();
+    }
+
+    function updateCarouselPositions() {
+      const total = ZONES.length;
+      ZONES.forEach((_, idx) => {
+        const card = document.getElementById(`card-${idx}`);
+        if (!card) return;
+
+        let diff = idx - currentIndex;
+        if (diff > total / 2) diff -= total;
+        if (diff < -total / 2) diff += total;
+
+        const isCenter = diff === 0;
+        const xOffset = diff * 210;
+        const zOffset = -Math.abs(diff) * 110;
+        const scale = isCenter ? 1.08 : Math.max(0.72, 1 - Math.abs(diff) * 0.16);
+        const opacity = Math.abs(diff) > 2 ? 0 : Math.max(0.4, 1 - Math.abs(diff) * 0.28);
+        const zIndex = 10 - Math.abs(diff);
+
+        card.style.transform = `translateX(${xOffset}px) translateZ(${zOffset}px) scale(${scale})`;
+        card.style.opacity = opacity;
+        card.style.zIndex = zIndex;
+        card.classList.toggle("active", isCenter);
+        card.style.pointerEvents = opacity === 0 ? "none" : "auto";
+      });
+
+      document.querySelectorAll(".neon-pin").forEach((p, i) => {
+        p.classList.toggle("active", i === currentIndex);
+      });
+    }
+
+    function renderMapPins() {
+      pinsContainer.innerHTML = "";
+      ZONES.forEach((zone, idx) => {
+        const pin = document.createElement("div");
+        pin.className = "neon-pin";
+        pin.id = `pin-${idx}`;
+        pin.style.left = `${zone.pinX}px`;
+        pin.style.top = `${zone.pinY}px`;
+        pin.style.color = zone.color;
+
+        pin.innerHTML = `
+          <svg class="pin-svg-icon" viewBox="0 0 384 512" fill="currentColor">
+            <path d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"/>
+          </svg>
+          <div class="pin-ring"></div>
+          <div class="pin-label-tag">${zone.title}: ${zone.subtitle}</div>
+        `;
+
+        pin.addEventListener("click", (e) => {
+          e.stopPropagation();
+          setZoneIndex(idx);
+          launchWalkthrough(idx);
+        });
+
+        pinsContainer.appendChild(pin);
+      });
+    }
+
+    function setZoneIndex(idx) {
+      currentIndex = (idx + ZONES.length) % ZONES.length;
+      updateCarouselPositions();
+    }
+
+    document.getElementById("btnPrev").addEventListener("click", () => setZoneIndex(currentIndex - 1));
+    document.getElementById("btnNext").addEventListener("click", () => setZoneIndex(currentIndex + 1));
+
+    document.getElementById("btnEnterActiveZone").addEventListener("click", () => {
+      launchWalkthrough(currentIndex);
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (isModalOpen) return;
+      if (e.key === "ArrowLeft") setZoneIndex(currentIndex - 1);
+      if (e.key === "ArrowRight") setZoneIndex(currentIndex + 1);
+      if (e.key === "Enter") launchWalkthrough(currentIndex);
+    });
+
+    /* 360 Walkthrough Viewer */
+    const walkthroughModal = document.getElementById("walkthroughModal");
+    const viewerArea = document.getElementById("viewerArea");
+    const modalZoneTitle = document.getElementById("modalZoneTitle");
+    const modalZoneSubtitle = document.getElementById("modalZoneSubtitle");
+    const compassPointer = document.getElementById("compassPointer");
+    const hotspotMount = document.getElementById("hotspotMount");
+    const thumbnailDock = document.getElementById("thumbnailDock");
+
+    const cvs = document.createElement("canvas");
+    const ctx = cvs.getContext("2d");
+    viewerArea.appendChild(cvs);
+
+    let viewYaw = 0;
+    let viewPitch = 0;
+    let viewFov = 75;
+    let isOrbiting = false;
+    let lastX = 0, lastY = 0;
+    let activeTexture = new Image();
+    let isTexLoaded = false;
+
+    function resizeViewer() {
+      if (!isModalOpen) return;
+      cvs.width = viewerArea.clientWidth || window.innerWidth;
+      cvs.height = viewerArea.clientHeight || window.innerHeight;
+      drawViewerFrame();
+    }
+    window.addEventListener("resize", resizeViewer);
+
+    function launchWalkthrough(idx) {
+      setZoneIndex(idx);
+      const zone = ZONES[currentIndex];
+
+      modalZoneTitle.textContent = zone.title;
+      modalZoneSubtitle.textContent = zone.subtitle;
+      viewYaw = zone.yaw || 0;
+      viewPitch = 0;
+      viewFov = 75;
+
+      walkthroughModal.classList.add("open");
+      isModalOpen = true;
+
+      renderDock();
+
+      isTexLoaded = false;
+      activeTexture = new Image();
+      activeTexture.crossOrigin = "anonymous";
+      activeTexture.src = getZoneImage(zone);
+
+      activeTexture.onload = () => {
+        isTexLoaded = true;
+        drawViewerFrame();
+      };
+
+      activeTexture.onerror = () => {
+        activeTexture.src = generateVisual(zone, 2048, 1024);
+        activeTexture.onload = () => {
+          isTexLoaded = true;
+          drawViewerFrame();
+        };
+      };
+
+      resizeViewer();
+      updateHotspot();
+    }
+
+    function renderDock() {
+      thumbnailDock.innerHTML = "";
+      ZONES.forEach((z, idx) => {
+        const d = document.createElement("div");
+        d.className = `dock-thumb ${idx === currentIndex ? "active" : ""}`;
+        
+        const img = document.createElement("img");
+        img.src = getZoneImage(z);
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = generateVisual(z, 150, 100);
+        };
+
+        const label = document.createElement("span");
+        label.textContent = `0${z.id}`;
+
+        d.appendChild(img);
+        d.appendChild(label);
+
+        d.addEventListener("click", () => {
+          launchWalkthrough(idx);
+        });
+
+        thumbnailDock.appendChild(d);
+      });
+    }
+
+    document.getElementById("btnExitModal").addEventListener("click", () => {
+      walkthroughModal.classList.remove("open");
+      isModalOpen = false;
+    });
+
+    function drawViewerFrame() {
+      if (!isModalOpen) return;
+      const W = cvs.width;
+      const H = cvs.height;
+
+      if (!isTexLoaded || !activeTexture.width) {
+        ctx.fillStyle = "#080a18";
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = "#00f0ff";
+        ctx.font = "14px " + getComputedStyle(document.body).fontFamily;
+        ctx.textAlign = "center";
+        ctx.fillText("LOADING 360° ARCHITECTURAL SPACE...", W / 2, H / 2);
+        return;
+      }
+
+      const imgW = activeTexture.width;
+      const imgH = activeTexture.height;
+
+      ctx.clearRect(0, 0, W, H);
+
+      const renderW = W * (360 / viewFov);
+      const renderH = renderW * (imgH / imgW);
+      const renderY = (H - renderH) / 2 + viewPitch * 4;
+      const startX = -((viewYaw % 360 + 360) % 360 / 360) * renderW;
+
+      ctx.drawImage(activeTexture, startX, renderY, renderW, renderH);
+      ctx.drawImage(activeTexture, startX + renderW, renderY, renderW, renderH);
+      if (startX > 0) {
+        ctx.drawImage(activeTexture, startX - renderW, renderY, renderW, renderH);
+      }
+
+      compassPointer.style.transform = `rotate(${-viewYaw}deg)`;
+      updateHotspot();
+    }
+
+    viewerArea.addEventListener("mousedown", (e) => {
+      isOrbiting = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isOrbiting || !isModalOpen) return;
+      const dx = e.clientX - lastX;
+      const dy = e.clientY - lastY;
+      lastX = e.clientX;
+      lastY = e.clientY;
+
+      viewYaw = (viewYaw - dx * 0.25 + 360) % 360;
+      viewPitch = Math.max(-50, Math.min(50, viewPitch + dy * 0.25));
+      drawViewerFrame();
+    });
+
+    window.addEventListener("mouseup", () => {
+      isOrbiting = false;
+    });
+
+    viewerArea.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) {
+        isOrbiting = true;
+        lastX = e.touches[0].clientX;
+        lastY = e.touches[0].clientY;
+      }
+    });
+
+    viewerArea.addEventListener("touchmove", (e) => {
+      if (!isOrbiting || !isModalOpen || e.touches.length !== 1) return;
+      const dx = e.touches[0].clientX - lastX;
+      const dy = e.touches[0].clientY - lastY;
+      lastX = e.touches[0].clientX;
+      lastY = e.touches[0].clientY;
+
+      viewYaw = (viewYaw - dx * 0.35 + 360) % 360;
+      viewPitch = Math.max(-50, Math.min(50, viewPitch + dy * 0.35));
+      drawViewerFrame();
+    });
+
+    viewerArea.addEventListener("touchend", () => {
+      isOrbiting = false;
+    });
+
+    viewerArea.addEventListener("wheel", (e) => {
+      if (!isModalOpen) return;
+      e.preventDefault();
+      viewFov = Math.max(45, Math.min(105, viewFov + e.deltaY * 0.05));
+      drawViewerFrame();
+    }, { passive: false });
+
+    function updateHotspot() {
+      hotspotMount.innerHTML = "";
+      if (!isModalOpen) return;
+
+      const zone = ZONES[currentIndex];
+      const nextZone = ZONES[zone.nextId - 1];
+
+      let diff = (zone.yaw || 0) - viewYaw;
+      while (diff < -180) diff += 360;
+      while (diff > 180) diff -= 360;
+
+      if (Math.abs(diff) < (viewFov / 2) + 10) {
+        const hX = (cvs.width / 2) + (diff / (viewFov / 2)) * (cvs.width / 2);
+        const hY = (cvs.height / 2) + (viewPitch * 3);
+
+        const h = document.createElement("div");
+        h.className = "teleport-hotspot";
+        h.style.left = `${hX}px`;
+        h.style.top = `${hY}px`;
+        h.innerHTML = `
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+          <span>Walk to ${nextZone.title}</span>
+        `;
+        h.addEventListener("click", () => {
+          launchWalkthrough(nextZone.id - 1);
+        });
+        hotspotMount.appendChild(h);
+      }
+    }
+
+    const fileInput = document.getElementById("fileInput");
+    document.getElementById("btnUploadImages").addEventListener("click", () => fileInput.click());
+
+    fileInput.addEventListener("change", (e) => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+      files.forEach((f) => {
+        loadedBlobs[f.name] = URL.createObjectURL(f);
+      });
+      renderCarouselCards();
+      renderMapPins();
+      if (isModalOpen) launchWalkthrough(currentIndex);
+    });
+
+    document.getElementById("btnHelp").addEventListener("click", () => {
+      alert(
+        "PURNA MARKET — Sense of Place\n\n" +
+        "• Click ANY Neon Map Pin below to teleport immediately into that 360° space.\n" +
+        "• Click the left / right arrows or active card to navigate zones.\n" +
+        "• Click 'Link Images' to attach your local architectural renders."
+      );
+    });
+
+    renderCarouselCards();
+    renderMapPins();
+    setZoneIndex(0);
+  </script>
+</body>
+</html>
+
