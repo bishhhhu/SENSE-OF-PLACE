@@ -662,7 +662,7 @@
         id: 1,
         title: "ZONE 1",
         subtitle: "The Walk",
-        image: "pedestrian_5.jpg",
+        image: "pedestrian.jpg",
         alts: ["pedestrian_4.jpg", "pedestrian_3.jpg", "pedestrian_2.jpg", "pedestrian.jpg"],
         color: "#00f0ff",
         pinX: 100,
@@ -675,7 +675,7 @@
         id: 2,
         title: "ZONE 2",
         subtitle: "Live in the Space",
-        image: "building view_3.jpg",
+        image: "building view.jpg",
         alts: ["building view_2.jpg", "building view.jpg", "building_view.jpg", "building_view_2.jpg"],
         color: "#25f46a",
         pinX: 220,
@@ -1039,11 +1039,22 @@
     let isTexLoaded = false;
 
     function resizeViewer() {
-      if (!isModalOpen) return;
-      cvs.width = viewerArea.clientWidth || window.innerWidth;
-      cvs.height = viewerArea.clientHeight || window.innerHeight;
-      drawViewerFrame();
-    }
+  if (!isModalOpen) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const w = viewerArea.clientWidth || window.innerWidth;
+  const h = viewerArea.clientHeight || window.innerHeight;
+  
+  cvs.width = Math.floor(w * dpr);
+  cvs.height = Math.floor(h * dpr);
+  cvs.style.width = w + "px";
+  cvs.style.height = h + "px";
+  
+  if (ctx) {
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+  }
+  drawViewerFrame();
+}
     window.addEventListener("resize", resizeViewer);
 
     function launchWalkthrough(idx) {
