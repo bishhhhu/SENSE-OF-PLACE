@@ -24,6 +24,31 @@
       flex-direction: column;
       position: relative;
     }
+    .audio-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #00f0ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.audio-btn:hover {
+  background: rgba(0, 240, 255, 0.2);
+  border-color: #00f0ff;
+  transform: scale(1.08);
+}
 
     .ambient-glow {
       position: absolute;
@@ -543,9 +568,26 @@
     #fileInput {
       display: none;
     }
-  </style>
+ </style>
 </head>
 <body>
+  <!-- Ambient Audio Player -->
+<audio id="ambient-audio" loop preload="auto">
+  <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Audio Floating Control Button -->
+<button id="audio-toggle-btn" class="audio-btn" aria-label="Toggle Sound" title="Toggle Sound">
+  <svg id="audio-icon-muted" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+    <line x1="23" y1="9" x2="17" y2="15"/>
+    <line x1="17" y1="9" x2="23" y2="15"/>
+  </svg>
+  <svg id="audio-icon-playing" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+  </svg>
+</button>
   <div class="ambient-glow"></div>
   <input type="file" id="fileInput" multiple accept="image/*" />
 
@@ -1272,6 +1314,42 @@
     renderCarouselCards();
     renderMapPins();
     setZoneIndex(0);
+    // --- Ambient Audio Controls ---
+const audioElem = document.getElementById('ambient-audio');
+const audioBtn = document.getElementById('audio-toggle-btn');
+const iconMuted = document.getElementById('audio-icon-muted');
+const iconPlaying = document.getElementById('audio-icon-playing');
+
+if (audioElem && audioBtn) {
+  audioElem.volume = 0.35;
+
+  audioBtn.addEventListener('click', () => {
+    if (audioElem.paused) {
+      audioElem.play().then(() => {
+        iconMuted.style.display = 'none';
+        iconPlaying.style.display = 'block';
+      }).catch(err => console.warn('Audio play error:', err));
+    } else {
+      audioElem.pause();
+      iconMuted.style.display = 'block';
+      iconPlaying.style.display = 'none';
+    }
+  });
+
+  const startAudioOnFirstInteraction = () => {
+    if (audioElem.paused) {
+      audioElem.play().then(() => {
+        iconMuted.style.display = 'none';
+        iconPlaying.style.display = 'block';
+      }).catch(() => {});
+    }
+    window.removeEventListener('click', startAudioOnFirstInteraction);
+    window.removeEventListener('touchstart', startAudioOnFirstInteraction);
+  };
+
+  window.addEventListener('click', startAudioOnFirstInteraction, { once: true });
+  window.addEventListener('touchstart', startAudioOnFirstInteraction, { once: true });
+}
   </script>
 </body>
 </html>
