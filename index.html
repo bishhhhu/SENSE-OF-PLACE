@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#161914" />
-  <title>Poorna Market — Sense of Place | 360° Virtual Walkthrough</title>
+  <title>Poorna Market — Sense of Place | 4K 360° VR Walkthrough</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,10 +27,6 @@
     }
     button { font: inherit; color: inherit; cursor: pointer; border: 0; }
     #market-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
-    .film-grain {
-      pointer-events: none; position: absolute; inset: 0; z-index: 2; opacity: .05;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E");
-    }
 
     /* Top Navigation Bar */
     .topbar {
@@ -334,8 +330,7 @@
 </head>
 <body>
   <div id="app">
-    <canvas id="market-canvas" aria-label="Interactive 360° VR walkthrough of Poorna Market"></canvas>
-    <div class="film-grain"></div>
+    <canvas id="market-canvas" aria-label="Interactive 4K 360° VR walkthrough of Poorna Market"></canvas>
 
     <header class="topbar">
       <a class="brand" href="#" aria-label="Poorna Market home">
@@ -344,7 +339,7 @@
       </a>
       <div class="top-meta">
         <span class="live-dot"></span>
-        <span id="scene-state">360° ARCHITECTURAL WALKTHROUGH</span>
+        <span id="scene-state">4K 360° ARCHITECTURAL WALKTHROUGH</span>
         <span class="meta-sep">/</span>
         <span>VISAKHAPATNAM · SENSE OF PLACE</span>
       </div>
@@ -358,7 +353,7 @@
 
     <section class="intro" id="intro">
       <div class="intro-content">
-        <div class="eyebrow"><span class="eyebrow-line"></span> SENSE OF PLACE · 360° SPATIAL STUDY</div>
+        <div class="eyebrow"><span class="eyebrow-line"></span> SENSE OF PLACE · 4K 360° SPATIAL STUDY</div>
         <h1>POORNA<br><em>MARKET</em></h1>
         <div class="intro-subtitle">VIRTUAL 360° WALKTHROUGH</div>
         <p class="intro-copy">Step inside a reimagined flower and vegetable marketplace through seven interconnected 360° architectural viewpoints and WebXR VR exploration.</p>
@@ -369,10 +364,10 @@
         </div>
       </div>
       <div class="intro-bottom">
-        <div class="scroll-cue"><span class="scroll-line"></span> DRAG TO LOOK · CLICK PORTALS TO WALK</div>
+        <div class="scroll-cue"><span class="scroll-line"></span> DRAG TO LOOK · W / S OR PORTALS TO WALK</div>
         <div class="intro-coordinates">17°42' N   83°18' E <span>·</span> 7 SPATIAL ZONES</div>
       </div>
-      <div class="intro-side-note">360° PANORAMAS<br>7 CONNECTED ZONES<br>WEBXR READY</div>
+      <div class="intro-side-note">4K 360° PANORAMAS<br>7 CONNECTED ZONES<br>META QUEST READY</div>
     </section>
 
     <main class="experience-ui" id="experience-ui" aria-hidden="true">
@@ -424,22 +419,22 @@
         <h2 id="info-title">THE WALK</h2>
         <p id="info-description">Shaded pedestrian boulevard welcoming visitors from the street edge into the heart of Poorna Market.</p>
         <div class="info-tags" id="info-tags"><span>BOULEVARD</span><span>STREET EDGE</span></div>
-        <div class="info-hint"><span class="hint-dot"></span> CLICK GLOWING 3D PORTALS TO WALK</div>
+        <div class="info-hint"><span class="hint-dot"></span> CLICK PORTALS OR PRESS W / S TO WALK</div>
       </aside>
 
       <div class="scene-footer">
         <div class="scene-location"><span class="location-mark">⌖</span><span id="scene-location">ZONE 01 / THE WALK</span></div>
-        <div class="scene-controls"><span><kbd>DRAG</kbd> LOOK 360°</span><span><kbd>CLICK</kbd> PORTAL TO WALK</span><span><kbd>SCROLL</kbd> ZOOM</span></div>
-        <div class="scene-scale">SENSE OF PLACE <span>·</span> 360° VR</div>
+        <div class="scene-controls"><span><kbd>W</kbd><kbd>S</kbd> WALK ZONES</span><span><kbd>A</kbd><kbd>D</kbd> TURN</span><span><kbd>CLICK</kbd> PORTALS</span></div>
+        <div class="scene-scale">SENSE OF PLACE <span>·</span> 4K 360° VR</div>
       </div>
 
       <div class="vr-overlay" id="vr-overlay">
         <div class="crosshair"><i></i><b></b></div>
         <div class="vr-top-label"><span class="live-dot"></span> IMMERSIVE 360° VR <span id="vr-floor-label">ZONE 01 · THE WALK</span></div>
-        <div class="vr-instructions">POINT VR CONTROLLER OR CROSSHAIR AT FLOATING PORTALS · TRIGGER TO WALK</div>
+        <div class="vr-instructions">THUMBSTICK UP/DOWN OR CONTROLLER TRIGGER ON PORTALS TO WALK · LEFT/RIGHT TO TURN</div>
         <div class="vr-pad">
-          <button data-turn="up">↑</button>
-          <div><button data-turn="left">←</button><button data-turn="down">↓</button><button data-turn="right">→</button></div>
+          <button data-move="forward">↑</button>
+          <div><button data-move="left">←</button><button data-move="back">↓</button><button data-move="right">→</button></div>
         </div>
         <button class="exit-vr" id="exit-vr">EXIT VR MODE</button>
       </div>
@@ -465,19 +460,19 @@
         <h2>WALK THROUGH<br>THE 360° SPACE.</h2>
         <div class="help-grid">
           <div><b>LOOK AROUND</b><span>Click and drag anywhere inside the 360° panorama to look around.</span></div>
-          <div><b>WALK PORTALS</b><span>Click the glowing circular portals inside the 360° view to step into the next zone.</span></div>
-          <div><b>ZOOM</b><span>Use the mouse wheel or pinch gesture to adjust field of view.</span></div>
+          <div><b>WALK PORTALS & KEYS</b><span>Click glowing 3D portals or press W / S (Up / Down arrows) to step to the next or previous zone.</span></div>
+          <div><b>META QUEST THUMBSTICK</b><span>Push the VR thumbstick forward/backward to walk between zones, or left/right to snap-turn.</span></div>
+          <div><b>META QUEST TRIGGER</b><span>Point either VR controller laser ray at a glowing 3D portal and pull the trigger to enter.</span></div>
           <div><b>ZONE MENU</b><span>Open the top-left menu icon to jump directly between Zones 01 through 07.</span></div>
-          <div><b>META QUEST VR</b><span>Click "VR HEADSET" to launch native WebXR stereo mode and point controllers at portals.</span></div>
           <div><b>SITE PLAN</b><span>Switch to "SITE PLAN" for an interactive top-down map of all seven spatial zones.</span></div>
         </div>
-        <div class="help-note">Built with Three.js and WebXR for desktop browsers and Meta Quest headsets.</div>
+        <div class="help-note">High-resolution anisotropy and 1.5x WebXR supersampling enabled for crisp 4K panorama clarity.</div>
       </div>
     </div>
 
     <div class="loading-screen" id="loading-screen">
       <div class="loading-mark"><i></i><i></i><i></i></div>
-      <span>LOADING 360° PANORAMAS</span>
+      <span>LOADING 4K 360° PANORAMAS</span>
       <div class="loading-track"><i></i></div>
     </div>
   </div>
@@ -616,7 +611,7 @@
       }
     ];
 
-    // Core Three.js Setup
+    // Core Three.js Setup (Crisp Full Native Resolution)
     const canvas = document.querySelector('#market-canvas');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#181d18');
@@ -624,41 +619,46 @@
     const camera = new THREE.PerspectiveCamera(72, innerWidth / innerHeight, 0.1, 1000);
     camera.position.set(0, 0, 0.1);
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.5));
     renderer.setSize(innerWidth, innerHeight);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMapping = THREE.NoToneMapping; // Preserves original crisp 4K render contrast
+
+    const maxAnisotropy = renderer.capabilities.getMaxAnisotropy();
 
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.06;
     controls.enablePan = false;
-    controls.rotateSpeed = -0.38; // Natural inside-sphere drag direction
+    controls.rotateSpeed = -0.38;
     controls.minDistance = 0.05;
     controls.maxDistance = 12;
 
-    // 360° Panorama Sphere
-    const sphereGeo = new THREE.SphereGeometry(50, 64, 48);
-    sphereGeo.scale(-1, 1, 1); // Flip normals inward
+    // High-Density 4K Panorama Sphere
+    const sphereGeo = new THREE.SphereGeometry(50, 128, 96);
+    sphereGeo.scale(-1, 1, 1);
     const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const panoSphere = new THREE.Mesh(sphereGeo, sphereMat);
     scene.add(panoSphere);
 
-    // Subtle Lighting for 3D Site Plan & Portals
+    // Lighting for 3D Site Plan
     const ambientLight = new THREE.AmbientLight(0xfff5e4, 1.4);
     scene.add(ambientLight);
     const dirLight = new THREE.DirectionalLight(0xffeed6, 1.8);
     dirLight.position.set(20, 40, 20);
     scene.add(dirLight);
 
-    // 3D Hotspot Portals Group (Works in both Desktop Raycasting & Meta Quest VR Controllers)
+    // 3D Hotspot Portals Group
     const portalsGroup = new THREE.Group();
     scene.add(portalsGroup);
     let portalMeshes = [];
 
-    // 3D Site Zoning Plan Group (Masterplan Mode)
+    // 3D Site Zoning Plan Group
     const sitePlanGroup = new THREE.Group();
     sitePlanGroup.visible = false;
     scene.add(sitePlanGroup);
@@ -666,33 +666,34 @@
 
     function createPortalLabelTexture(text) {
       const c = document.createElement('canvas');
-      c.width = 512; c.height = 112;
+      c.width = 640; c.height = 140;
       const ctx = c.getContext('2d');
-      ctx.fillStyle = 'rgba(19, 24, 20, 0.88)';
+      ctx.fillStyle = 'rgba(19, 24, 20, 0.90)';
       ctx.beginPath();
-      ctx.roundRect(12, 12, 488, 88, 44);
+      ctx.roundRect(14, 14, 612, 112, 56);
       ctx.fill();
       ctx.strokeStyle = '#d2a67e';
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 5;
       ctx.stroke();
 
       ctx.fillStyle = '#d2a67e';
       ctx.beginPath();
-      ctx.arc(58, 56, 12, 0, Math.PI * 2);
+      ctx.arc(72, 70, 14, 0, Math.PI * 2);
       ctx.fill();
 
       ctx.fillStyle = '#f1eee5';
-      ctx.font = '600 22px "DM Mono", monospace';
+      ctx.font = '600 26px "DM Mono", monospace';
       ctx.textAlign = 'left';
       ctx.textBaseline = 'middle';
-      ctx.fillText(text.toUpperCase(), 88, 57);
+      ctx.fillText(text.toUpperCase(), 108, 72);
 
       const tex = new THREE.CanvasTexture(c);
       tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = maxAnisotropy;
       return tex;
     }
 
-    function yawPitchToVector3(yawDeg, pitchDeg, radius = 24) {
+    function yawPitchToVector3(yawDeg, pitchDeg, radius = 22) {
       const yaw = THREE.MathUtils.degToRad(yawDeg);
       const pitch = THREE.MathUtils.degToRad(pitchDeg);
       const x = radius * Math.cos(pitch) * Math.sin(yaw);
@@ -712,26 +713,23 @@
         holder.position.copy(pos);
         holder.lookAt(0, 0, 0);
 
-        // Glowing Architectural Ring
-        const ringGeo = new THREE.RingGeometry(0.85, 1.15, 32);
+        const ringGeo = new THREE.RingGeometry(0.95, 1.3, 40);
         const ringMat = new THREE.MeshBasicMaterial({ color: 0xd2a67e, side: THREE.DoubleSide });
         const ring = new THREE.Mesh(ringGeo, ringMat);
         holder.add(ring);
 
-        // Inner Hit Disc
-        const discGeo = new THREE.CircleGeometry(1.15, 32);
-        const discMat = new THREE.MeshBasicMaterial({ color: 0xc77453, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
+        const discGeo = new THREE.CircleGeometry(1.3, 40);
+        const discMat = new THREE.MeshBasicMaterial({ color: 0xc77453, transparent: true, opacity: 0.42, side: THREE.DoubleSide });
         const disc = new THREE.Mesh(discGeo, discMat);
         disc.userData = { targetId: spot.targetId, label: spot.label, ring };
         holder.add(disc);
         portalMeshes.push(disc);
 
-        // Floating Pill Signboard
         const labelTex = createPortalLabelTexture(spot.label);
-        const signGeo = new THREE.PlaneGeometry(6.8, 1.5);
+        const signGeo = new THREE.PlaneGeometry(7.2, 1.6);
         const signMat = new THREE.MeshBasicMaterial({ map: labelTex, transparent: true, side: THREE.DoubleSide });
         const sign = new THREE.Mesh(signGeo, signMat);
-        sign.position.set(0, -1.9, 0.1);
+        sign.position.set(0, -2.0, 0.1);
         sign.userData = { targetId: spot.targetId, label: spot.label, ring };
         holder.add(sign);
         portalMeshes.push(sign);
@@ -740,7 +738,6 @@
       });
     }
 
-    // Build 3D Site Plan Representation
     function buildSitePlan() {
       const ground = new THREE.Mesh(
         new THREE.PlaneGeometry(90, 90),
@@ -754,14 +751,12 @@
       grid.position.y = -1.95;
       sitePlanGroup.add(grid);
 
-      // Connecting Walkway Path
       const curvePts = ZONES.map(z => new THREE.Vector3(z.pos[0], -1.2, z.pos[2]));
       const curve = new THREE.CatmullRomCurve3(curvePts, true);
       const pathGeo = new THREE.TubeGeometry(curve, 100, 0.25, 8, true);
       const pathMat = new THREE.MeshBasicMaterial({ color: 0xd2a67e });
       sitePlanGroup.add(new THREE.Mesh(pathGeo, pathMat));
 
-      // Interactive Zone Nodes
       ZONES.forEach((z, idx) => {
         const nodeGroup = new THREE.Group();
         nodeGroup.position.set(z.pos[0], -0.8, z.pos[2]);
@@ -790,8 +785,9 @@
     }
     buildSitePlan();
 
-    // Texture Loader with Fallback Chain
+    // 4K Sharp Texture Loader (Disables blurry mipmaps & maximizes anisotropy)
     const texLoader = new THREE.TextureLoader();
+    const textureCache = new Map();
     let currentZoneIndex = 0;
     let isEvening = false;
     let isMasterplan = false;
@@ -801,11 +797,20 @@
     function loadPanoramaWithFallback(candidates, onSuccess) {
       if (!candidates.length) return;
       const [first, ...rest] = candidates;
+      if (textureCache.has(first)) {
+        onSuccess(textureCache.get(first));
+        return;
+      }
       texLoader.load(
         first,
         (tex) => {
           tex.colorSpace = THREE.SRGBColorSpace;
+          tex.generateMipmaps = false;
           tex.minFilter = THREE.LinearFilter;
+          tex.magFilter = THREE.LinearFilter;
+          tex.anisotropy = maxAnisotropy;
+          tex.needsUpdate = true;
+          textureCache.set(first, tex);
           onSuccess(tex);
         },
         undefined,
@@ -814,6 +819,17 @@
           else toast(`IMAGE NOT FOUND: ${first}`);
         }
       );
+    }
+
+    // Preload adjacent zones in background for instant 4K transitions
+    function preloadAdjacentZones(idx) {
+      const next = ZONES[(idx + 1) % ZONES.length];
+      const prev = ZONES[(idx - 1 + ZONES.length) % ZONES.length];
+      [next, prev].forEach(z => {
+        if (z && !textureCache.has(z.image)) {
+          loadPanoramaWithFallback([z.image, ...(z.alts || [])], () => {});
+        }
+      });
     }
 
     function loadZone(index, withTransition = true) {
@@ -828,39 +844,54 @@
         sphereMat.color.set(isEvening ? '#8ea4b8' : '#ffffff');
         sphereMat.needsUpdate = true;
 
-        // Orient camera toward zone's default yaw
-        const yawRad = THREE.MathUtils.degToRad(zone.yaw || 0);
-        camera.position.set(Math.sin(yawRad) * 0.1, 0, -Math.cos(yawRad) * 0.1);
-        controls.target.set(0, 0, 0);
-        controls.update();
+        if (!renderer.xr.isPresenting) {
+          const yawRad = THREE.MathUtils.degToRad(zone.yaw || 0);
+          camera.position.set(Math.sin(yawRad) * 0.1, 0, -Math.cos(yawRad) * 0.1);
+          controls.target.set(0, 0, 0);
+          controls.update();
+        }
 
         buildZonePortals(zone);
         updateUIForZone(safeIndex);
+        preloadAdjacentZones(safeIndex);
 
-        if (withTransition) {
+        if (withTransition && !renderer.xr.isPresenting) {
           camera.fov = 72;
           camera.updateProjectionMatrix();
-          isTransitioning = false;
         }
+        isTransitioning = false;
         document.getElementById('loading-screen').classList.add('hidden');
       };
 
-      if (withTransition && !isTransitioning) {
+      if (withTransition && !isTransitioning && !renderer.xr.isPresenting) {
         isTransitioning = true;
-        // Smooth forward step zoom effect
         let step = 0;
         const zoomInterval = setInterval(() => {
           step++;
-          camera.fov = Math.max(48, 72 - step * 2.2);
+          camera.fov = Math.max(46, 72 - step * 2.5);
           camera.updateProjectionMatrix();
           if (step >= 10) {
             clearInterval(zoomInterval);
             loadPanoramaWithFallback([zone.image, ...(zone.alts || [])], applyTexture);
           }
-        }, 25);
+        }, 22);
       } else {
         loadPanoramaWithFallback([zone.image, ...(zone.alts || [])], applyTexture);
       }
+    }
+
+    function stepForwardZone() {
+      if (isTransitioning) return;
+      const nextIdx = (currentZoneIndex + 1) % ZONES.length;
+      loadZone(nextIdx, true);
+      toast(`WALKING TO ZONE 0${ZONES[nextIdx].id} · ${ZONES[nextIdx].title}`);
+    }
+
+    function stepBackwardZone() {
+      if (isTransitioning) return;
+      const prevIdx = (currentZoneIndex - 1 + ZONES.length) % ZONES.length;
+      loadZone(prevIdx, true);
+      toast(`BACK TO ZONE 0${ZONES[prevIdx].id} · ${ZONES[prevIdx].title}`);
     }
 
     function updateUIForZone(idx) {
@@ -914,7 +945,7 @@
       }
       if (hits.length) {
         hoveredPortal = hits[0].object;
-        hoveredPortal.userData.ring.scale.setScalar(1.22);
+        hoveredPortal.userData.ring.scale.setScalar(1.25);
         canvas.style.cursor = 'pointer';
       } else {
         canvas.style.cursor = 'grab';
@@ -928,7 +959,7 @@
 
     canvas.addEventListener('pointerup', (e) => {
       const dist = Math.hypot(e.clientX - downPos.x, e.clientY - downPos.y);
-      if (dist > 6) return; // Ignore drags
+      if (dist > 6) return;
 
       const rect = canvas.getBoundingClientRect();
       pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -953,6 +984,21 @@
           loadZone(targetIdx, true);
           toast(`WALKING TO ${ZONES[targetIdx].title}`);
         }
+      }
+    });
+
+    // Keyboard Controls (W / Up = Walk Forward Zone, S / Down = Walk Back Zone, A / D = Turn)
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'KeyW' || e.code === 'ArrowUp') {
+        stepForwardZone();
+      } else if (e.code === 'KeyS' || e.code === 'ArrowDown') {
+        stepBackwardZone();
+      } else if (e.code === 'KeyA' || e.code === 'ArrowLeft') {
+        controls.rotateLeft(0.35);
+        controls.update();
+      } else if (e.code === 'KeyD' || e.code === 'ArrowRight') {
+        controls.rotateLeft(-0.35);
+        controls.update();
       }
     });
 
@@ -998,7 +1044,7 @@
       sitePlanGroup.visible = false;
       document.getElementById('masterplan-label').classList.remove('show');
       document.getElementById('ar-overlay').classList.remove('active');
-      document.getElementById('scene-state').textContent = '360° ARCHITECTURAL WALKTHROUGH';
+      document.getElementById('scene-state').textContent = '4K 360° ARCHITECTURAL WALKTHROUGH';
       setActiveModeBtn('mode-explore');
 
       controls.rotateSpeed = -0.38;
@@ -1027,8 +1073,46 @@
       toast('360° GLOBE VIEW · DRAG TO INSPECT PANORAMA SPHERE');
     }
 
-    // Native Meta Quest WebXR + Desktop VR Fallback
+    // Native Meta Quest WebXR (Crisp 1.5x Resolution + Thumbstick & Trigger Walkthrough)
     const xrControllers = [];
+    let xrStickCooldown = 0;
+
+    function handleXRGamepadInput(dt) {
+      const session = renderer.xr.getSession();
+      if (!session) return;
+      if (xrStickCooldown > 0) {
+        xrStickCooldown -= dt;
+        return;
+      }
+
+      for (const source of session.inputSources) {
+        if (!source.gamepad || !source.gamepad.axes) continue;
+        const axes = source.gamepad.axes;
+        const stickX = axes.length >= 4 ? axes[2] : (axes[0] || 0);
+        const stickY = axes.length >= 4 ? axes[3] : (axes[1] || 0);
+
+        // Push thumbstick UP (negative Y) -> Step Forward to Next Zone
+        if (stickY < -0.65) {
+          stepForwardZone();
+          xrStickCooldown = 0.75;
+          return;
+        }
+        // Push thumbstick DOWN (positive Y) -> Step Backward to Previous Zone
+        if (stickY > 0.65) {
+          stepBackwardZone();
+          xrStickCooldown = 0.75;
+          return;
+        }
+        // Push thumbstick LEFT/RIGHT -> Snap-turn panorama 45 degrees
+        if (Math.abs(stickX) > 0.7) {
+          panoSphere.rotation.y += (stickX > 0 ? -Math.PI / 4 : Math.PI / 4);
+          portalsGroup.rotation.y = panoSphere.rotation.y;
+          xrStickCooldown = 0.45;
+          return;
+        }
+      }
+    }
+
     async function startVR() {
       enterWalkthrough();
       if (isMasterplan || isOrbitGlobe) exitMasterplan();
@@ -1041,11 +1125,12 @@
             optionalFeatures: ['local-floor', 'bounded-floor']
           });
           renderer.xr.enabled = true;
+          renderer.xr.setFramebufferScaleFactor(1.5); // Crisp 4K supersampling on Meta Quest
           renderer.xr.setReferenceSpaceType('local-floor');
           await renderer.xr.setSession(session);
-          document.getElementById('scene-state').textContent = 'WEBXR / META QUEST VR ACTIVE';
+          document.getElementById('scene-state').textContent = 'WEBXR 4K / META QUEST VR ACTIVE';
 
-          // Add VR Controller Laser Rays for Clicking Portals
+          // Add VR Controller Laser Rays + Trigger/Squeeze Walkthrough
           for (let i = 0; i < 2; i++) {
             const ctrl = renderer.xr.getController(i);
             const rayGeo = new THREE.BufferGeometry().setFromPoints([
@@ -1054,7 +1139,8 @@
             ]);
             const ray = new THREE.Line(rayGeo, new THREE.LineBasicMaterial({ color: 0xd2a67e }));
             ctrl.add(ray);
-            ctrl.addEventListener('selectstart', () => {
+
+            const triggerWalk = () => {
               const tempMatrix = new THREE.Matrix4();
               tempMatrix.identity().extractRotation(ctrl.matrixWorld);
               raycaster.ray.origin.setFromMatrixPosition(ctrl.matrixWorld);
@@ -1065,7 +1151,10 @@
                 const idx = ZONES.findIndex(z => z.id === targetId);
                 if (idx !== -1) loadZone(idx, false);
               }
-            });
+            };
+
+            ctrl.addEventListener('selectstart', triggerWalk);
+            ctrl.addEventListener('squeezestart', stepForwardZone);
             scene.add(ctrl);
             xrControllers.push(ctrl);
           }
@@ -1082,14 +1171,14 @@
         }
       }
       document.getElementById('scene-state').textContent = 'SIMULATED VR WALKTHROUGH';
-      toast('VR MODE · USE ARROWS OR DRAG TO LOOK · CLICK PORTALS TO WALK');
+      toast('VR MODE · PRESS W / S OR ARROWS TO WALK ZONES · CLICK PORTALS');
     }
 
     function exitVR() {
       if (renderer.xr.getSession()) renderer.xr.getSession().end();
       document.getElementById('vr-overlay').classList.remove('active');
       setActiveModeBtn('mode-explore');
-      document.getElementById('scene-state').textContent = '360° ARCHITECTURAL WALKTHROUGH';
+      document.getElementById('scene-state').textContent = '4K 360° ARCHITECTURAL WALKTHROUGH';
     }
 
     // Event Bindings
@@ -1149,10 +1238,8 @@
 
     // Guided Journey & Walkway Guide
     byId('journey-next').addEventListener('click', () => {
-      const nextIdx = (currentZoneIndex + 1) % ZONES.length;
-      loadZone(nextIdx, true);
+      stepForwardZone();
       byId('journey-next').classList.add('active');
-      toast(`GUIDED JOURNEY · ${nextIdx + 1}/7 · ${ZONES[nextIdx].title}`);
     });
 
     byId('circulation-toggle').addEventListener('click', () => {
@@ -1182,19 +1269,17 @@
       panoSphere.rotation.y += Math.PI / 4;
     });
     byId('place-model').addEventListener('click', () => {
-      loadZone((currentZoneIndex + 1) % ZONES.length, false);
+      stepForwardZone();
     });
 
-    // VR Directional Pad
-    document.querySelectorAll('[data-turn]').forEach(btn => {
+    // On-screen VR Directional Pad (Up = Next Zone, Down = Previous Zone, Left/Right = Turn)
+    document.querySelectorAll('[data-move]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const dir = btn.dataset.turn;
-        const step = 0.25;
-        if (dir === 'left') controls.rotateLeft(step);
-        if (dir === 'right') controls.rotateLeft(-step);
-        if (dir === 'up') controls.rotateUp(step);
-        if (dir === 'down') controls.rotateUp(-step);
-        controls.update();
+        const dir = btn.dataset.move;
+        if (dir === 'forward') stepForwardZone();
+        if (dir === 'back') stepBackwardZone();
+        if (dir === 'left') { controls.rotateLeft(0.35); controls.update(); }
+        if (dir === 'right') { controls.rotateLeft(-0.35); controls.update(); }
       });
     });
 
@@ -1206,7 +1291,7 @@
       if (e.target === byId('help-modal')) byId('help-modal').classList.remove('show');
     });
 
-    // Subtle WebAudio Market Ambience Synthesizer (No external MP3 required)
+    // Subtle WebAudio Market Ambience
     let audioCtx = null;
     let isSoundOn = false;
     byId('sound-toggle').addEventListener('click', () => {
@@ -1246,14 +1331,15 @@
     // Animation Loop
     const clock = new THREE.Clock();
     renderer.setAnimationLoop(() => {
-      const t = clock.getElapsedTime();
+      const dt = clock.getDelta();
+      const t = clock.elapsedTime;
       controls.update();
+      handleXRGamepadInput(dt);
 
-      // Gentle pulse on 3D walkthrough portals
       portalMeshes.forEach((mesh, idx) => {
         if (mesh.userData.ring) {
           const pulse = 1 + Math.sin(t * 3 + idx) * 0.06;
-          mesh.userData.ring.scale.setScalar(hoveredPortal === mesh ? 1.22 : pulse);
+          mesh.userData.ring.scale.setScalar(hoveredPortal === mesh ? 1.25 : pulse);
         }
       });
 
@@ -1271,4 +1357,3 @@
   </script>
 </body>
 </html>
-
