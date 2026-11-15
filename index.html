@@ -24,6 +24,53 @@
       flex-direction: column;
       position: relative;
     }
+    #hotspot-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.walk-hotspot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  background: rgba(8, 10, 24, 0.75);
+  backdrop-filter: blur(6px);
+  border: 2px solid #00f0ff;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.45);
+  transition: transform 0.2s ease, background 0.2s ease;
+  animation: pulseRing 2s infinite;
+}
+
+.walk-hotspot:hover {
+  background: #00f0ff;
+  color: #080a18;
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+@keyframes pulseRing {
+  0% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.6); }
+  70% { box-shadow: 0 0 0 14px rgba(0, 240, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 240, 255, 0); }
+}
+
+.walking-transition {
+  transition: transform 0.55s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.45s ease !important;
+  transform: scale(1.35) !important;
+  opacity: 0.15 !important;
+}
     .audio-btn {
   position: fixed;
   top: 20px;
@@ -711,7 +758,13 @@
         pinY: 250,
         nextId: 2,
         yaw: 0,
-        theme: "boulevard"
+        theme: "boulevard",
+        yaw: 0,
+    theme: "boulevard",
+    hotspots: [
+      { yaw: 15, pitch: -5, label: "Walk to Live in the Space →", targetId: 2 }
+    ]
+  },
       },
       {
         id: 2,
@@ -724,7 +777,12 @@
         pinY: 280,
         nextId: 3,
         yaw: 45,
-        theme: "hypar"
+        theme: "hypar",
+        theme: "hypar",
+    hotspots: [
+      { yaw: -165, pitch: -5, label: "← Back to The Walk", targetId: 1 },
+      { yaw: 40, pitch: -5, label: "Walk to Everyday Life →", targetId: 3 }
+    ]
       },
       {
         id: 3,
@@ -737,7 +795,12 @@
         pinY: 120,
         nextId: 4,
         yaw: 90,
-        theme: "jali"
+        theme: "jali",
+        theme: "jali",
+    hotspots: [
+      { yaw: -165, pitch: -5, label: "← Back to Live in the Space", targetId: 2 },
+      { yaw: 20, pitch: -5, label: "Walk to Zone 4 →", targetId: 4 }
+    ]
       },
       {
         id: 4,
@@ -750,7 +813,12 @@
         pinY: 130,
         nextId: 5,
         yaw: 135,
-        theme: "pergola"
+        theme: "pergola",
+        theme: "pergola",
+    hotspots: [
+      { yaw: -165, pitch: -5, label: "← Back to Everyday Life", targetId: 3 },
+      { yaw: 20, pitch: -5, label: "Walk to The Rest →", targetId: 5 }
+    ]
       },
       {
         id: 5,
@@ -763,7 +831,12 @@
         pinY: 270,
         nextId: 6,
         yaw: 180,
-        theme: "courtyard"
+        theme: "courtyard",
+        theme: "courtyard",
+    hotspots: [
+      { yaw: -165, pitch: -5, label: "← Back to The Path", targetId: 4 },
+      { yaw: 20, pitch: -5, label: "Walk to Zone 6 →", targetId: 6 }
+    ]
       },
       {
         id: 6,
@@ -776,7 +849,12 @@
         pinY: 190,
         nextId: 7,
         yaw: 225,
-        theme: "brickgallery"
+        theme: "brickgallery",
+        theme: "brickgallery",
+    hotspots: [
+      { yaw: -165, pitch: -5, label: "← Back to The Rest", targetId: 5 },
+      { yaw: 20, pitch: -5, label: "Walk to The Feel →", targetId: 7 }
+    ]
       },
       {
         id: 7,
@@ -789,7 +867,11 @@
         pinY: 220,
         nextId: 1,
         yaw: 270,
-        theme: "nightbazaar"
+        theme: "nightbazaar",
+        hotspots: [
+      { yaw: -165, pitch: -5, label: "← Back to Between Bricks", targetId: 6 },
+      { yaw: 20, pitch: -5, label: "Return to The Walk (Zone 1) ↺", targetId: 1 }
+    ]
       }
     ];
 
@@ -1071,6 +1153,9 @@
     const cvs = document.createElement("canvas");
     const ctx = cvs.getContext("2d");
     viewerArea.appendChild(cvs);
+    const hotspotLayer = document.createElement("div");
+hotspotLayer.id = "hotspot-layer";
+viewerArea.appendChild(hotspotLayer);
 
     let viewYaw = 0;
     let viewPitch = 0;
@@ -1350,6 +1435,61 @@ if (audioElem && audioBtn) {
   window.addEventListener('click', startAudioOnFirstInteraction, { once: true });
   window.addEventListener('touchstart', startAudioOnFirstInteraction, { once: true });
 }
+    // --- 3D Walkthrough Hotspots & Smooth Step Transition ---
+function walkToZone(targetId) {
+  const targetIdx = ZONES.findIndex(z => z.id === targetId);
+  if (targetIdx === -1) return;
+
+  cvs.classList.add('walking-transition');
+  if (hotspotLayer) hotspotLayer.style.opacity = '0';
+
+  setTimeout(() => {
+    launchWalkthrough(targetIdx);
+    cvs.classList.remove('walking-transition');
+    if (hotspotLayer) hotspotLayer.style.opacity = '1';
+  }, 450);
+}
+
+function updateWalkHotspots() {
+  if (!hotspotLayer || !isModalOpen) return;
+  hotspotLayer.innerHTML = '';
+
+  const zone = ZONES[currentIndex];
+  if (!zone || !zone.hotspots) return;
+
+  const w = viewerArea.clientWidth || window.innerWidth;
+  const h = viewerArea.clientHeight || window.innerHeight;
+  const fovRad = (viewFov || 75) * (Math.PI / 180);
+  const focalLength = (w / 2) / Math.tan(fovRad / 2);
+
+  zone.hotspots.forEach(spot => {
+    let dYaw = ((spot.yaw - viewYaw + 540) % 360) - 180;
+    let dPitch = spot.pitch - viewPitch;
+
+    if (Math.abs(dYaw) > 85) return;
+
+    const x = (w / 2) + Math.tan(dYaw * Math.PI / 180) * focalLength;
+    const y = (h / 2) - Math.tan(dPitch * Math.PI / 180) * focalLength;
+
+    const btn = document.createElement('button');
+    btn.className = 'walk-hotspot';
+    btn.style.left = `${x}px`;
+    btn.style.top = `${y}px`;
+    btn.innerHTML = `<span>●</span> ${spot.label}`;
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      walkToZone(spot.targetId);
+    };
+
+    hotspotLayer.appendChild(btn);
+  });
+}
+
+const originalDrawFrame = drawViewerFrame;
+drawViewerFrame = function() {
+  originalDrawFrame();
+  updateWalkHotspots();
+};
   </script>
 </body>
 </html>
