@@ -21,7 +21,7 @@ building with a timber gridshell canopy, rebuilt from a single aerial render
 | Walkthrough | 8 stops with commentary; start, previous, next, pause, resume, exit |
 | 360° | 10 eye-level viewpoints rendered live from the model (no photo panoramas were supplied); drag to look, zoom, hotspots |
 | Day / evening | Interpolated sun, sky, fog, exposure, glowing brick screen, canopy uplight |
-| VR | Headsets (e.g. Meta Quest browser): WebXR `immersive-vr` at full scale — left stick moves, right stick snap-turns, trigger steps forward; falls back to a seated reference space when floor tracking isn't available. Phones: Cardboard-style split-screen stereo with gyroscope head tracking, tap to walk (drag-to-look if motion access is denied) |
+| VR | Headsets (e.g. Meta Quest browser): WebXR `immersive-vr` at full scale — left stick moves, right stick snap-turns, trigger steps forward; falls back to a seated reference space when floor tracking isn't available. Phones: Cardboard-style split-screen stereo with gyroscope head tracking, on-screen hold-to-move and turn controls, tap to step, viewpoint jumps, keyboard (WASD / arrows, Q E) and Bluetooth gamepad support (drag-to-look if motion access is denied) |
 | AR | WebXR `immersive-ar` with hit-test: reticle, tap to place, rotate / scale / re-place; AR Quick Look export on iOS. Buttons only enable when the browser reports support |
 
 ## Architecture
@@ -60,6 +60,9 @@ npm run preview
 ```
 
 ## Deploy (GitHub Pages)
+
+`public/404.html` redirects any non-hash path (e.g. `/experience`) to its `#/` route, and the app reloads itself once if a cached page requests files from an older deploy.
+
 
 `vite.config.ts` uses a relative base and the app uses hash routes, so the build
 works under any repository name. `.github/workflows/deploy.yml` builds and

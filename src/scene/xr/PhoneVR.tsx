@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { StereoEffect } from 'three/examples/jsm/effects/StereoEffect.js';
 import { useApp } from '../../state/store';
 import { panoPoints } from '../../data/views';
-import { xrBridge } from './xrSupport';
+import { vrInput, xrBridge } from './xrSupport';
 
 /**
  * Phone VR for Cardboard-style viewers on phones whose browser has no WebXR VR
@@ -74,6 +74,8 @@ function withTimeout<T>(p: Promise<T> | undefined, ms: number): Promise<T | unde
 const zee = new THREE.Vector3(0, 0, 1);
 const backToFront = new THREE.Quaternion(-Math.sqrt(0.5), 0, 0, Math.sqrt(0.5)); // camera looks out of the back of the phone
 const EYE_STEP = 2.5;
+const WALK_SPEED = 3.2; // m/s
+const TURN_SPEED = 1.6; // rad/s
 
 function PhoneVRSession() {
   const gl = useThree((s) => s.gl);
@@ -174,9 +176,72 @@ function PhoneVRSession() {
     };
   }, [gl, camera, tmp]);
 
+  // jump to another viewpoint (on-screen previous / next)
+  useEffect(() => {
+    xrBridge.phoneVRGoTo = (index: number) => {
+      const p = panoPoints[(index + panoPoints.length) % panoPoints.length];
+      const s = st.current;
+      useApp.getState().setPano(panoPoints.indexOf(p));
+      s.pos.set(...p.position);
+      camera.position.copy(s.pos);
+      s.targetYaw = Math.atan2(-(p.lookAt[0] - p.position[0]), -(p.lookAt[2] - p.position[2]));
+      s.dragYaw = 0;
+      s.dragPitch = 0;
+      s.aligned = false; // re-align the sensor heading to the new view direction
+    };
+    return () => {
+      xrBridge.phoneVRGoTo = null;
+    };
+  }, [camera]);
+
+  // keyboard (and Bluetooth keyboards / remotes): WASD or arrows, Q/E to turn
+  const keys = useRef(new Set<string>());
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => keys.current.add(e.key.toLowerCase());
+    const up = (e: KeyboardEvent) => keys.current.delete(e.key.toLowerCase());
+    window.addEventListener('keydown', down);
+    window.addEventListener('keyup', up);
+    return () => {
+      window.removeEventListener('keydown', down);
+      window.removeEventListener('keyup', up);
+      vrInput.forward = vrInput.strafe = vrInput.turn = 0;
+    };
+  }, []);
+
   // priority 1 takes over rendering while this session is mounted
-  useFrame(() => {
+  useFrame((_, dt) => {
     const s = st.current;
+    const step = Math.min(dt, 0.1);
+
+    // combine on-screen controls, keyboard and any connected gamepad
+    const k = keys.current;
+    let fwd = vrInput.forward + (k.has('w') || k.has('arrowup') ? 1 : 0) - (k.has('s') || k.has('arrowdown') ? 1 : 0);
+    let strafe = vrInput.strafe + (k.has('d') ? 1 : 0) - (k.has('a') ? 1 : 0);
+    let turn = vrInput.turn + (k.has('e') || k.has('arrowright') ? 1 : 0) - (k.has('q') || k.has('arrowleft') ? 1 : 0);
+    const pad = navigator.getGamepads?.().find((g) => g && g.connected);
+    if (pad && pad.axes.length >= 2) {
+      const dz = (v: number) => (Math.abs(v) > 0.15 ? v : 0);
+      strafe += dz(pad.axes[0]);
+      fwd -= dz(pad.axes[1]);
+      if (pad.axes.length >= 4) turn += dz(pad.axes[2]);
+      if (pad.buttons[12]?.pressed) fwd += 1;
+      if (pad.buttons[13]?.pressed) fwd -= 1;
+    }
+    fwd = THREE.MathUtils.clamp(fwd, -1, 1);
+    strafe = THREE.MathUtils.clamp(strafe, -1, 1);
+    turn = THREE.MathUtils.clamp(turn, -1, 1);
+    if (turn) s.dragYaw -= turn * TURN_SPEED * step;
+    if (fwd || strafe) {
+      tmp.v.set(0, 0, -1).applyQuaternion(camera.quaternion);
+      tmp.v.y = 0;
+      if (tmp.v.lengthSq() > 1e-4) {
+        tmp.v.normalize();
+        s.pos.addScaledVector(tmp.v, fwd * WALK_SPEED * step);
+        s.pos.x += -tmp.v.z * strafe * WALK_SPEED * step;
+        s.pos.z += tmp.v.x * strafe * WALK_SPEED * step;
+      }
+    }
+
     if (s.sensor) {
       tmp.yq.setFromAxisAngle(THREE.Object3D.DEFAULT_UP, s.yawOffset + s.dragYaw);
       camera.quaternion.copy(tmp.yq).multiply(s.device);
@@ -184,7 +249,7 @@ function PhoneVRSession() {
       tmp.e.set(-s.dragPitch, s.targetYaw + s.dragYaw, 0, 'YXZ');
       camera.quaternion.setFromEuler(tmp.e);
     }
-    camera.position.lerp(s.pos, 0.12);
+    camera.position.lerp(s.pos, 0.25);
     camera.updateMatrixWorld();
     effect.setSize(size.width, size.height);
     effect.render(scene, camera);

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>The Jaali Pavilion</title>
+    <script>
+      // GitHub Pages serves this file for any path that doesn't exist. The app
+      // uses hash routes (#/experience), so send /<repo>/experience?mode=xr to
+      // /<repo>/#/experience?mode=xr instead of showing a 404.
+      (function () {
+        var parts = location.pathname.split('/');
+        var repo = parts[1] || '';
+        var rest = parts.slice(2).join('/').replace(/\/+$/, '').replace(/^index\.html$/i, '');
+        var base = repo ? '/' + repo + '/' : '/';
+        var hash = location.hash && location.hash.length > 1 ? location.hash : '#/' + rest + location.search;
+        location.replace(base + hash);
+      })();
+    </script>
+    <style>
+      body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #f5f1e8; color: #262723; font: 15px system-ui, sans-serif; }
+      a { color: #b66a4a; }
+    </style>
+  </head>
+  <body>
+    <p>Redirecting to <a href="./">The Jaali Pavilion</a>…</p>
+  </body>
+</html>

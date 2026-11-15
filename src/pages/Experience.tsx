@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Sun, Moon, Orbit, ScanEye, Layers, Map as MapIcon, Route, Compass, Glasses, LogOut } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, Gamepad2, RotateCcw, RotateCw, Sun, Moon, Orbit, ScanEye, Layers, Map as MapIcon, Route, Compass, Glasses, LogOut } from 'lucide-react';
 import { useApp, type Mode } from '../state/store';
 import { href, replaceParams } from '../lib/router';
 import { levels, type LevelId } from '../data/building';
@@ -11,7 +11,7 @@ import { CameraTools, SelectionCard } from '../ui/experience/common';
 import { ExplorePanel, FloorsPanel, ModelPanel, PanoPanel, TourPanel } from '../ui/experience/panels';
 import { SitePlan } from '../ui/experience/SitePlan';
 import { AROverlay, XRPanel } from '../ui/experience/XRPanel';
-import { xrBridge } from '../scene/xr/xrSupport';
+import { vrInput, xrBridge } from '../scene/xr/xrSupport';
 
 const SceneRoot = lazy(() => import('../scene/SceneRoot'));
 
@@ -190,10 +190,12 @@ export default function Experience({ params }: { params: URLSearchParams }) {
 
 function PhoneVROverlay() {
   const [hint, setHint] = useState(true);
+  const [showControls, setShowControls] = useState(true);
   const denied = useApp((s) => s.phoneSensorDenied);
+  const panoIndex = useApp((s) => s.panoIndex);
   const [portrait, setPortrait] = useState(() => window.innerHeight > window.innerWidth);
   useEffect(() => {
-    const t = setTimeout(() => setHint(false), 6000);
+    const t = setTimeout(() => setHint(false), 7000);
     const onResize = () => setPortrait(window.innerHeight > window.innerWidth);
     window.addEventListener('resize', onResize);
     return () => {
@@ -201,24 +203,111 @@ function PhoneVROverlay() {
       window.removeEventListener('resize', onResize);
     };
   }, []);
+  const pill = 'pointer-events-auto flex items-center gap-1.5 rounded-full bg-charcoal/75 px-3 py-2 text-xs text-ivory backdrop-blur-sm';
   return (
-    <div className="pointer-events-none fixed inset-0 z-40">
+    <div className="pointer-events-none fixed inset-0 z-40 select-none">
       <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/60" />
-      <button
-        className="pointer-events-auto absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-charcoal/75 px-4 py-2 text-xs text-ivory"
-        onClick={() => xrBridge.exitPhoneVR?.()}
-      >
-        <LogOut size={13} /> Exit VR
-      </button>
-      {(hint || portrait || denied) && (
-        <p className="absolute bottom-6 left-1/2 w-[min(90vw,420px)] -translate-x-1/2 rounded-sm bg-charcoal/75 px-4 py-2 text-center text-xs leading-relaxed text-ivory">
-          {portrait ? 'Turn your phone sideways (landscape) and place it in your viewer. ' : ''}
-          {denied
-            ? 'Motion sensor access was not allowed, so drag to look around · tap to walk forward.'
-            : 'Turn your head to look around · tap the screen or the viewer button to walk forward.'}
+
+      {/* top bar: viewpoints, controls toggle, exit */}
+      <div className="absolute inset-x-0 top-2 flex items-center justify-center gap-2 px-2">
+        <button className={pill} onClick={() => xrBridge.phoneVRGoTo?.(panoIndex - 1)} aria-label="Previous viewpoint">
+          <ChevronLeft size={14} />
+        </button>
+        <span className="rounded-full bg-charcoal/75 px-3 py-2 text-xs text-ivory">{panoPoints[panoIndex]?.name}</span>
+        <button className={pill} onClick={() => xrBridge.phoneVRGoTo?.(panoIndex + 1)} aria-label="Next viewpoint">
+          <ChevronRight size={14} />
+        </button>
+        <button className={pill} onClick={() => setShowControls((v) => !v)} aria-pressed={showControls}>
+          <Gamepad2 size={13} /> {showControls ? 'Hide controls' : 'Controls'}
+        </button>
+        <button className={pill} onClick={() => xrBridge.exitPhoneVR?.()}>
+          <LogOut size={13} /> Exit
+        </button>
+      </div>
+
+      {showControls && (
+        <>
+          {/* move pad (bottom left) */}
+          <div className="pointer-events-auto absolute bottom-4 left-4 grid grid-cols-3 grid-rows-3 gap-1.5" role="group" aria-label="Move">
+            <span />
+            <HoldButton label="Walk forward" axis="forward" value={1}>
+              <ArrowUp size={20} />
+            </HoldButton>
+            <span />
+            <HoldButton label="Step left" axis="strafe" value={-1}>
+              <ArrowLeft size={20} />
+            </HoldButton>
+            <span className="grid place-items-center text-[9px] uppercase tracking-wider text-ivory/80 [text-shadow:0_1px_2px_#000]">Move</span>
+            <HoldButton label="Step right" axis="strafe" value={1}>
+              <ArrowRight size={20} />
+            </HoldButton>
+            <span />
+            <HoldButton label="Walk back" axis="forward" value={-1}>
+              <ArrowDown size={20} />
+            </HoldButton>
+            <span />
+          </div>
+          {/* turn (bottom right) */}
+          <div className="pointer-events-auto absolute bottom-4 right-4 flex flex-col items-center gap-1.5" role="group" aria-label="Turn">
+            <span className="text-[9px] uppercase tracking-wider text-ivory/80 [text-shadow:0_1px_2px_#000]">Turn</span>
+            <div className="flex gap-1.5">
+              <HoldButton label="Turn left" axis="turn" value={-1}>
+                <RotateCcw size={20} />
+              </HoldButton>
+              <HoldButton label="Turn right" axis="turn" value={1}>
+                <RotateCw size={20} />
+              </HoldButton>
+            </div>
+          </div>
+        </>
+      )}
+
+      {(hint || portrait) && (
+        <p className="absolute bottom-24 left-1/2 w-[min(80vw,420px)] -translate-x-1/2 rounded-sm bg-charcoal/75 px-4 py-2 text-center text-xs leading-relaxed text-ivory">
+          {portrait ? 'Turn your phone sideways (landscape) for VR. ' : ''}
+          {denied ? 'Drag to look around. ' : 'Turn your head to look around. '}
+          Hold the arrows to walk and turn, or tap the view to step forward. Keyboard: WASD / arrows, Q E to turn.
         </p>
       )}
     </div>
+  );
+}
+
+/** Press-and-hold control that writes to the shared VR movement input. */
+function HoldButton({ axis, value, label, children }: { axis: 'forward' | 'strafe' | 'turn'; value: number; label: string; children: React.ReactNode }) {
+  const [held, setHeld] = useState(false);
+  const start = (e: React.PointerEvent) => {
+    e.preventDefault();
+    vrInput[axis] = value;
+    try {
+      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    } catch {
+      /* capture is only a convenience; movement works without it */
+    }
+    setHeld(true);
+  };
+  const stop = () => {
+    if (vrInput[axis] === value) vrInput[axis] = 0;
+    setHeld(false);
+  };
+  useEffect(() => () => {
+    if (vrInput[axis] === value) vrInput[axis] = 0;
+  }, [axis, value]);
+  return (
+    <button
+      aria-label={label}
+      title={label}
+      onPointerDown={start}
+      onPointerUp={stop}
+      onPointerCancel={stop}
+      onLostPointerCapture={stop}
+      onContextMenu={(e) => e.preventDefault()}
+      className={`grid h-12 w-12 touch-none place-items-center rounded-full border border-ivory/40 text-ivory backdrop-blur-sm transition ${
+        held ? 'bg-terracotta/90' : 'bg-charcoal/60'
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 

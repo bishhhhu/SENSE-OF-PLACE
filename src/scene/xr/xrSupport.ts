@@ -36,11 +36,18 @@ export async function detectXR(): Promise<XRSupport> {
   return { checked: true, secure, api: !!xr, vr, ar, quickLook, phoneVR };
 }
 
+/**
+ * Movement input for phone VR, written by the on-screen controls while a
+ * button is held: forward/strafe in -1..1, turn in -1..1 (left negative).
+ */
+export const vrInput = { forward: 0, strafe: 0, turn: 0 };
+
 /** Commands the UI can send to the XR controller living inside the canvas. */
 export const xrBridge: {
   enterVR: (() => Promise<void>) | null;
   enterPhoneVR: (() => Promise<void>) | null;
   exitPhoneVR: (() => void) | null;
+  phoneVRGoTo: ((index: number) => void) | null;
   enterAR: (() => Promise<void>) | null;
   exit: (() => void) | null;
   arRotate: (deg: number) => void;
@@ -51,6 +58,7 @@ export const xrBridge: {
   enterVR: null,
   enterPhoneVR: null,
   exitPhoneVR: null,
+  phoneVRGoTo: null,
   enterAR: null,
   exit: null,
   arRotate: () => {},

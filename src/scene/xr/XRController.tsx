@@ -202,15 +202,29 @@ export function XRController({ arRoot, overlay }: { arRoot: RefObject<THREE.Grou
       let moveX = 0;
       let moveY = 0;
       let turn = 0;
+      const sticks: { hand: XRHandedness; x: number; y: number }[] = [];
       for (const src of session.inputSources) {
         const axes = src.gamepad?.axes;
         if (!axes || axes.length < 2) continue;
-        const x = axes.length >= 4 ? axes[2] : axes[0];
-        const y = axes.length >= 4 ? axes[3] : axes[1];
-        if (src.handedness === 'right') turn = x;
-        else {
-          moveX = x;
-          moveY = y;
+        // xr-standard mapping: thumbstick on axes 2/3, touchpad on 0/1
+        const x = axes.length >= 4 && (axes[2] || axes[3]) ? axes[2] : axes[0];
+        const y = axes.length >= 4 && (axes[2] || axes[3]) ? axes[3] : axes[1];
+        sticks.push({ hand: src.handedness, x, y });
+      }
+      if (sticks.length === 1) {
+        // one controller: push to walk, sideways to turn
+        moveY = sticks[0].y;
+        turn = Math.abs(sticks[0].x) > 0.65 ? sticks[0].x : 0;
+      } else {
+        for (const st of sticks) {
+          if (st.hand === 'right') {
+            turn = st.x;
+            // right stick up/down also walks, for people who prefer one hand
+            if (Math.abs(st.y) > Math.abs(moveY)) moveY = st.y;
+          } else {
+            moveX = st.x;
+            moveY = Math.abs(st.y) > Math.abs(moveY) ? st.y : moveY;
+          }
         }
       }
       let changed = false;

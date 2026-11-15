@@ -3,6 +3,7 @@ import { useRoute } from './lib/router';
 import Landing from './pages/Landing';
 import Architecture from './pages/Architecture';
 import { Loader } from './ui/Loader';
+import { ErrorBoundary } from './ui/ErrorBoundary';
 
 // The 3D experience (three.js, R3F) is split out so the exhibition pages load fast.
 const Experience = lazy(() => import('./pages/Experience'));
@@ -16,12 +17,14 @@ export default function App() {
     if (el) requestAnimationFrame(() => document.getElementById(el)?.scrollIntoView({ behavior: 'smooth' }));
   }, [route.path, route.params]);
 
+  let page;
   if (route.path === '/experience')
-    return (
+    page = (
       <Suspense fallback={<Loader label="Loading the 3D reconstruction" />}>
         <Experience params={route.params} />
       </Suspense>
     );
-  if (route.path === '/architecture') return <Architecture />;
-  return <Landing />;
+  else if (route.path === '/architecture') page = <Architecture />;
+  else page = <Landing />;
+  return <ErrorBoundary key={route.path}>{page}</ErrorBoundary>;
 }
