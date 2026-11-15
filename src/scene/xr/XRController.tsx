@@ -23,7 +23,7 @@ export function XRController({ arRoot, overlay }: { arRoot: RefObject<THREE.Grou
   const xrActive = useApp((s) => s.xrActive);
   const reticle = useRef<THREE.Mesh>(null);
   const hitSource = useRef<XRHitTestSource | null>(null);
-  const vr = useRef({ P: new THREE.Vector3(), yaw: 0, base: null as XRReferenceSpace | null, turnLatch: false });
+  const vr = useRef({ P: new THREE.Vector3(), yaw: 0, base: null as XRReferenceSpace | null, turnLatch: false, floorOffset: 0 });
   const ar = useRef({ placed: false, scale: AR_DEFAULT_SCALE, rot: 0 });
   const tmp = useMemo(() => ({ q: new THREE.Quaternion(), v: new THREE.Vector3(), m: new THREE.Matrix4(), e: new THREE.Euler() }), []);
 
@@ -52,22 +52,37 @@ export function XRController({ arRoot, overlay }: { arRoot: RefObject<THREE.Grou
     xrBridge.enterVR = async () => {
       if (!xr) throw new Error('WebXR is not available in this browser.');
       // requestSession must be the first await so it runs inside the user gesture
-      const session = await xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor'] });
+      const session = await xr.requestSession('immersive-vr', { optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking'] });
+      // Headsets with room tracking grant 'local-floor' (origin on the floor).
+      // Phones and seated/3-DoF viewers often only grant 'local' (origin at the
+      // head), so fall back to it and lift the origin to eye height instead.
+      let floorOffset = 0;
       try {
+        let type: XRReferenceSpaceType = 'local-floor';
+        try {
+          await session.requestReferenceSpace('local-floor');
+        } catch {
+          type = 'local';
+          floorOffset = EYE;
+        }
         gl.xr.enabled = true;
-        gl.xr.setReferenceSpaceType('local-floor');
+        gl.xr.setReferenceSpaceType(type);
         await gl.xr.setSession(session);
       } catch (err) {
-        session.end();
+        session.end().catch(() => {});
         throw err;
       }
       const start = panoPoints[useApp.getState().panoIndex] ?? panoPoints[0];
       const dx = start.lookAt[0] - start.position[0];
       const dz = start.lookAt[2] - start.position[2];
       vr.current.yaw = Math.atan2(-dx, -dz);
-      vr.current.P.set(start.position[0], start.position[1] - EYE, start.position[2]);
+      vr.current.floorOffset = floorOffset;
+      vr.current.P.set(start.position[0], start.position[1] - EYE + floorOffset, start.position[2]);
       vr.current.base = gl.xr.getReferenceSpace();
       applyOffset();
+      // Trigger / screen tap (select) steps forward along the gaze — works on
+      // every VR device, including controller-less and 3-DoF viewers.
+      session.addEventListener('select', () => stepForward(2.5));
       session.addEventListener('end', onEnd, { once: true });
       setXRActive('vr');
     };
@@ -149,6 +164,17 @@ export function XRController({ arRoot, overlay }: { arRoot: RefObject<THREE.Grou
     }
     vrApply.current = applyOffset;
 
+    function stepForward(dist: number) {
+      if (!vr.current.base) return;
+      const xrCam = gl.xr.getCamera();
+      xrCam.getWorldDirection(tmp.v);
+      tmp.v.y = 0;
+      if (tmp.v.lengthSq() < 1e-4) return;
+      tmp.v.normalize();
+      vr.current.P.addScaledVector(tmp.v, dist);
+      applyOffset();
+    }
+
     return () => {
       xrBridge.enterVR = null;
       xrBridge.enterAR = null;
@@ -216,8 +242,37 @@ export function XRController({ arRoot, overlay }: { arRoot: RefObject<THREE.Grou
   });
 
   return (
-    <mesh ref={reticle} matrixAutoUpdate={false} visible={false} geometry={ringGeom}>
-      <meshBasicMaterial color="#B66A4A" />
-    </mesh>
+    <>
+      <mesh ref={reticle} matrixAutoUpdate={false} visible={false} geometry={ringGeom}>
+        <meshBasicMaterial color="#B66A4A" />
+      </mesh>
+      {xrActive === 'vr' && <ControllerRays />}
+    </>
   );
+}
+
+const rayGeom = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, -1)]);
+const rayMat = new THREE.LineBasicMaterial({ color: '#F5F1E8', transparent: true, opacity: 0.7 });
+
+/** Short pointer rays on the tracked controllers so users can see their hands. */
+function ControllerRays() {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  useEffect(() => {
+    const ctrls = [0, 1].map((i) => {
+      const c = gl.xr.getController(i);
+      const line = new THREE.Line(rayGeom, rayMat);
+      line.scale.z = 1.5;
+      c.add(line);
+      scene.add(c);
+      return { c, line };
+    });
+    return () => {
+      for (const { c, line } of ctrls) {
+        c.remove(line);
+        scene.remove(c);
+      }
+    };
+  }, [gl, scene]);
+  return null;
 }

@@ -21,7 +21,7 @@ building with a timber gridshell canopy, rebuilt from a single aerial render
 | Walkthrough | 8 stops with commentary; start, previous, next, pause, resume, exit |
 | 360° | 10 eye-level viewpoints rendered live from the model (no photo panoramas were supplied); drag to look, zoom, hotspots |
 | Day / evening | Interpolated sun, sky, fog, exposure, glowing brick screen, canopy uplight |
-| VR | WebXR `immersive-vr` at full scale; left stick moves, right stick snap-turns |
+| VR | Headsets (e.g. Meta Quest browser): WebXR `immersive-vr` at full scale — left stick moves, right stick snap-turns, trigger steps forward; falls back to a seated reference space when floor tracking isn't available. Phones: Cardboard-style split-screen stereo with gyroscope head tracking, tap to walk (drag-to-look if motion access is denied) |
 | AR | WebXR `immersive-ar` with hit-test: reticle, tap to place, rotate / scale / re-place; AR Quick Look export on iOS. Buttons only enable when the browser reports support |
 
 ## Architecture

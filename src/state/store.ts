@@ -5,7 +5,7 @@ import { elementById } from '../data/elements';
 
 export type Mode = 'model' | 'explore' | 'floors' | 'plan' | 'tour' | 'pano' | 'xr';
 export type EnvMode = 'day' | 'evening';
-export type XRActive = 'none' | 'vr' | 'ar';
+export type XRActive = 'none' | 'vr' | 'ar' | 'phonevr';
 
 interface CameraRequest {
   position: [number, number, number];
@@ -50,6 +50,7 @@ interface AppState {
 
   xrActive: XRActive;
   setXRActive: (x: XRActive) => void;
+  phoneSensorDenied: boolean;
 
   sceneReady: boolean;
   setSceneReady: (v: boolean) => void;
@@ -103,6 +104,7 @@ export const useApp = create<AppState>((set, get) => ({
 
   xrActive: 'none',
   setXRActive: (xrActive) => set({ xrActive }),
+  phoneSensorDenied: false,
 
   sceneReady: false,
   setSceneReady: (sceneReady) => set({ sceneReady }),

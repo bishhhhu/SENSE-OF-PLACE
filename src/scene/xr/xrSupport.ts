@@ -8,6 +8,8 @@ export interface XRSupport {
   vr: boolean;
   ar: boolean;
   quickLook: boolean;
+  /** Phone with a motion sensor: can run the Cardboard-style stereo VR mode. */
+  phoneVR: boolean;
 }
 
 export async function detectXR(): Promise<XRSupport> {
@@ -29,12 +31,16 @@ export async function detectXR(): Promise<XRSupport> {
   }
   const a = document.createElement('a');
   const quickLook = !!a.relList?.supports?.('ar');
-  return { checked: true, secure, api: !!xr, vr, ar, quickLook };
+  const touch = window.matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
+  const phoneVR = touch && typeof window.DeviceOrientationEvent !== 'undefined';
+  return { checked: true, secure, api: !!xr, vr, ar, quickLook, phoneVR };
 }
 
 /** Commands the UI can send to the XR controller living inside the canvas. */
 export const xrBridge: {
   enterVR: (() => Promise<void>) | null;
+  enterPhoneVR: (() => Promise<void>) | null;
+  exitPhoneVR: (() => void) | null;
   enterAR: (() => Promise<void>) | null;
   exit: (() => void) | null;
   arRotate: (deg: number) => void;
@@ -43,6 +49,8 @@ export const xrBridge: {
   exportUSDZ: (() => Promise<Blob>) | null;
 } = {
   enterVR: null,
+  enterPhoneVR: null,
+  exitPhoneVR: null,
   enterAR: null,
   exit: null,
   arRotate: () => {},

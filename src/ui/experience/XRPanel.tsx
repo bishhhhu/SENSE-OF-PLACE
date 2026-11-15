@@ -8,7 +8,7 @@ import { Dock } from './common';
 export function XRPanel({ onFallbackPano, onFallbackModel }: { onFallbackPano: () => void; onFallbackModel: () => void }) {
   const [sup, setSup] = useState<XRSupport | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState<'vr' | 'ar' | 'ql' | null>(null);
+  const [busy, setBusy] = useState<'vr' | 'ar' | 'ql' | 'phone' | null>(null);
   const panoIndex = useApp((s) => s.panoIndex);
   const setPano = useApp((s) => s.setPano);
 
@@ -16,11 +16,11 @@ export function XRPanel({ onFallbackPano, onFallbackModel }: { onFallbackPano: (
     detectXR().then(setSup);
   }, []);
 
-  const run = async (kind: 'vr' | 'ar') => {
+  const run = async (kind: 'vr' | 'ar' | 'phone') => {
     setError(null);
     setBusy(kind);
     try {
-      const fn = kind === 'vr' ? xrBridge.enterVR : xrBridge.enterAR;
+      const fn = kind === 'vr' ? xrBridge.enterVR : kind === 'phone' ? xrBridge.enterPhoneVR : xrBridge.enterAR;
       if (!fn) throw new Error('The 3D scene is still loading.');
       await fn();
     } catch (e) {
@@ -70,7 +70,7 @@ export function XRPanel({ onFallbackPano, onFallbackModel }: { onFallbackPano: (
               <h3 className="flex items-center gap-2 font-serif text-2xl">
                 <Glasses size={18} strokeWidth={1.5} /> Virtual reality
               </h3>
-              <Status ok={sup.vr} />
+              <Status ok={sup.vr || sup.phoneVR} />
             </div>
             {sup.vr ? (
               <>
@@ -96,10 +96,43 @@ export function XRPanel({ onFallbackPano, onFallbackModel }: { onFallbackPano: (
                   {busy === 'vr' ? 'Starting…' : 'Enter VR'}
                 </button>
               </>
-            ) : (
+            ) : null}
+            {sup.phoneVR && (
+              <div className={sup.vr ? 'mt-4 border-t border-charcoal/10 pt-4' : ''}>
+                <p className="label">Phone VR</p>
+                <p className="mt-1 text-sm text-charcoal-soft">
+                  Split-screen stereo for a Cardboard-style viewer (or just hold the phone up). Turn your head to look around; tap the
+                  screen or the viewer's button to walk forward. Best in landscape.
+                </p>
+                {!sup.vr && (
+                  <>
+                    <label className="label mt-4 block" htmlFor="phone-vr-start">
+                      Start at
+                    </label>
+                    <select
+                      id="phone-vr-start"
+                      className="mt-1 w-full border border-charcoal/20 bg-ivory px-3 py-2 text-sm"
+                      value={panoIndex}
+                      onChange={(e) => setPano(Number(e.target.value))}
+                    >
+                      {panoPoints.map((p, i) => (
+                        <option key={p.id} value={i}>
+                          {p.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
+                <button className={`${sup.vr ? 'btn-outline' : 'btn-accent'} mt-3 w-full`} disabled={busy !== null} onClick={() => run('phone')}>
+                  {busy === 'phone' ? 'Starting…' : 'Enter phone VR'}
+                </button>
+              </div>
+            )}
+            {!sup.vr && !sup.phoneVR && (
               <>
                 <p className="mt-2 text-sm text-charcoal-soft">
-                  No WebXR VR headset is available to this browser. On a headset such as a Meta Quest, open this page in its built-in browser.
+                  This computer has no VR headset connected to the browser, so VR can't start here. Open this page on a VR headset's
+                  browser (e.g. Meta Quest), or on a phone to use phone VR with a Cardboard-style viewer.
                 </p>
                 <button className="btn-outline mt-3 w-full !py-2.5 text-xs" onClick={onFallbackPano}>
                   <Compass size={14} /> Use eye-level 360° views instead

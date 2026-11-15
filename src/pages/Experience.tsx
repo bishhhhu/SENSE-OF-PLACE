@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useRef } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, Sun, Moon, Orbit, ScanEye, Layers, Map as MapIcon, Route, Compass, Glasses, LogOut } from 'lucide-react';
 import { useApp, type Mode } from '../state/store';
 import { href, replaceParams } from '../lib/router';
@@ -118,6 +118,7 @@ export default function Experience({ params }: { params: URLSearchParams }) {
       )}
 
       {/* Top bar */}
+      {xr !== 'phonevr' && (
       <header className="pointer-events-auto fixed inset-x-0 top-0 z-30 flex h-[60px] items-center gap-2 border-b border-charcoal/10 bg-ivory/90 px-2 backdrop-blur-md sm:gap-4 sm:px-4">
         <a href={href('/')} className="tool shrink-0" aria-label="Back to the exhibition" title="Back to the exhibition">
           <ArrowLeft size={16} />
@@ -153,6 +154,7 @@ export default function Experience({ params }: { params: URLSearchParams }) {
           <span className="hidden sm:inline">{env === 'day' ? 'Day' : 'Evening'}</span>
         </button>
       </header>
+      )}
 
       {hasGL && !ready && <Loader label="Building the reconstruction" />}
 
@@ -180,7 +182,42 @@ export default function Experience({ params }: { params: URLSearchParams }) {
           </button>
         </div>
       )}
+      {xr === 'phonevr' && <PhoneVROverlay />}
       <AROverlay ref={overlay} />
+    </div>
+  );
+}
+
+function PhoneVROverlay() {
+  const [hint, setHint] = useState(true);
+  const denied = useApp((s) => s.phoneSensorDenied);
+  const [portrait, setPortrait] = useState(() => window.innerHeight > window.innerWidth);
+  useEffect(() => {
+    const t = setTimeout(() => setHint(false), 6000);
+    const onResize = () => setPortrait(window.innerHeight > window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+  return (
+    <div className="pointer-events-none fixed inset-0 z-40">
+      <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-black/60" />
+      <button
+        className="pointer-events-auto absolute left-1/2 top-3 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-charcoal/75 px-4 py-2 text-xs text-ivory"
+        onClick={() => xrBridge.exitPhoneVR?.()}
+      >
+        <LogOut size={13} /> Exit VR
+      </button>
+      {(hint || portrait || denied) && (
+        <p className="absolute bottom-6 left-1/2 w-[min(90vw,420px)] -translate-x-1/2 rounded-sm bg-charcoal/75 px-4 py-2 text-center text-xs leading-relaxed text-ivory">
+          {portrait ? 'Turn your phone sideways (landscape) and place it in your viewer. ' : ''}
+          {denied
+            ? 'Motion sensor access was not allowed, so drag to look around · tap to walk forward.'
+            : 'Turn your head to look around · tap the screen or the viewer button to walk forward.'}
+        </p>
+      )}
     </div>
   );
 }

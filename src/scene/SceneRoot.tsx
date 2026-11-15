@@ -8,6 +8,7 @@ import { Site } from './site/Site';
 import { Environment } from './env/Environment';
 import { CameraRig } from './camera/CameraRig';
 import { XRController } from './xr/XRController';
+import { PhoneVR } from './xr/PhoneVR';
 import { panoPoints, SECTION_Z } from '../data/views';
 
 export default function SceneRoot({ overlay }: { overlay: RefObject<HTMLElement> }) {
@@ -45,6 +46,7 @@ export default function SceneRoot({ overlay }: { overlay: RefObject<HTMLElement>
         <PanoHotspots />
         <CameraRig />
         <XRController arRoot={arRoot} overlay={overlay} />
+        <PhoneVR />
         <AdaptiveDpr pixelated={false} />
       </Suspense>
     </Canvas>
@@ -86,7 +88,8 @@ function SectionPlane() {
   const mode = useApp((s) => s.mode);
   const gl = useThree((s) => s.gl);
   const plane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 0, -1), SECTION_Z), []);
-  const on = view === 'section' && mode !== 'pano' && mode !== 'tour';
+  const xr = useApp((s) => s.xrActive);
+  const on = view === 'section' && mode !== 'pano' && mode !== 'tour' && xr === 'none';
   useEffect(() => {
     gl.clippingPlanes = on ? [plane] : [];
     return () => {
