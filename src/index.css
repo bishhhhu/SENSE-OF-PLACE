@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-ivory font-sans text-charcoal antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+  ::selection {
+    background: #e7cbbb;
+  }
+  :focus-visible {
+    outline: 2px solid #b66a4a;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .label {
+    @apply font-mono text-[10.5px] uppercase tracking-label text-charcoal-soft;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-[2px] px-5 py-3 text-[13px] font-medium tracking-wide transition duration-300;
+  }
+  .btn-primary {
+    @apply btn bg-charcoal text-ivory hover:bg-terracotta;
+  }
+  .btn-accent {
+    @apply btn bg-terracotta text-ivory hover:bg-terracotta-dark;
+  }
+  .btn-outline {
+    @apply btn border border-charcoal/70 text-charcoal hover:bg-charcoal hover:text-ivory;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.12em];
+  }
+  .panel {
+    @apply border border-charcoal/10 bg-ivory/95 shadow-[0_12px_40px_-18px_rgba(38,39,35,0.35)] backdrop-blur-md;
+  }
+  .tool {
+    @apply grid h-9 w-9 place-items-center rounded-[2px] border border-charcoal/15 bg-ivory/90 text-charcoal transition hover:border-charcoal hover:bg-charcoal hover:text-ivory disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .gridlines {
+    background-image: linear-gradient(to right, rgba(38, 39, 35, 0.06) 1px, transparent 1px);
+    background-size: calc(100% / 12) 100%;
+  }
+  .hairline {
+    @apply h-px w-full bg-charcoal/15;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+}
